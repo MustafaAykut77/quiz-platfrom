@@ -1,1 +1,1 @@
-# quiz-platfrom
+# interavtive-quiz-platfrom
