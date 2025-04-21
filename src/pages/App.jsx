@@ -1,18 +1,19 @@
 import { useState } from 'react'
-import './App.css'
+import '../index.css'
 import SideBar from '../components/SideBar'
 
 // Component Imports
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Input } from "@/components/ui/input"
 
 export default function App() {
   return (
     <>
-      <div className="flex text-green-700 font-bold">
+      <div className="flex w-full max-w-sm items-center space-x-2 font-bold">
         <SideBar/>
-        <Button variant="outline">Button</Button>
-        <Progress value={33} className="w-[300px] bg-gray-200" />
+        <Input placeholder="Quiz Kodunu Girin" />
+        <Button className={"text-green-700"} variant="outline" type="submit">Gir</Button>
       </div>
     </>
   )

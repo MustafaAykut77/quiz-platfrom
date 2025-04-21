@@ -3,6 +3,55 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer components {
+  .sidebar-icon {
+    @apply relative flex items-center justify-center
+           h-12 w-12 mt-2 mb-2 mx-auto shadow-lg
+           bg-gray-800 text-green-500
+           hover:bg-green-800 hover:text-white
+           rounded-3xl hover:rounded-xl
+           transition-all duration-300 ease-linear
+           cursor-pointer; 
+  }
+
+  .sidebar-tooltip {
+    @apply absolute w-auto p-2 m-2 min-w-max left-14 rounded-md shadow-md
+    text-white bg-gray-900 
+    text-xs font-bold 
+    transition-all duration-100 scale-0 origin-left;
+  }
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
