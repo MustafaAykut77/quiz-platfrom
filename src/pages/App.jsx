@@ -12,8 +12,8 @@ export default function App() {
     <>
       <div className="flex w-full max-w-sm items-center space-x-2 font-bold">
         <SideBar/>
-        <Input placeholder="Quiz Kodunu Girin" />
-        <Button className={"text-green-700"} variant="outline" type="submit">Gir</Button>
+        <Input className={"text-amber-100 "} placeholder="Quiz Kodunu Girin" />
+        <Button variant="destructive" type="submit">Gir</Button>
       </div>
     </>
   )
