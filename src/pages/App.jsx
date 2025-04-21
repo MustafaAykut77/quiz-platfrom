@@ -12,7 +12,7 @@ export default function App() {
       <div className="flex text-green-700 font-bold">
         <SideBar/>
         <Button variant="outline">Button</Button>
-        <Progress value={33} />
+        <Progress value={33} className="w-[300px] bg-gray-200" />
       </div>
     </>
   )
