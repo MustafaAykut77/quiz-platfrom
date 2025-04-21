@@ -6,9 +6,7 @@ import SideBar from '../components/SideBar'
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
     <>
       <div className="flex text-green-700 font-bold">
@@ -19,5 +17,3 @@ function App() {
     </>
   )
 }
-
-export default App
