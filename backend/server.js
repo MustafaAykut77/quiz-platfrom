@@ -8,14 +8,12 @@ const io = new Server(port, {
   }
 });
 
-
 io.on("connection", socket => {
     console.log(socket.id);
     socket.on("send-code", (code) => {
     console.log(code); 
     })
   })
-
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
