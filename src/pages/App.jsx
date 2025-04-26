@@ -1,28 +1,33 @@
-import { useState } from 'react'
-import '../index.css'
-import SideBar from '../components/SideBar'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import '../index.css';
+import "../config/firebase-config";
 
-// Component Imports
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Login from './login/Login';
+import Register from './register/Register';
+import Quiz from './quiz/Quiz';
+import Qwiz from './Qwiz';
+import CheckAuth from "../controllers/CheckAuth";
+import { AuthProvider } from "../contexts/authContext/page";
+import Header from "@/src/Components/Header"
 
-export default function App() {
+const App = () => {
   return (
-    <>
-      <div className="flex w-full max-w-sm items-center space-x-2 font-bold">
-
-        <Button variant="destructive" className={"absolute right-5 top-5 text-amber-100 h-15 w-15"} type="submit">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-        </Button>
-
-        <Input className={"text-amber-100"} placeholder="Quiz Kodunu Girin" />
-        <Button variant="destructive" className={"text-amber-100 h-13 w-15"} type="submit">Gir</Button>
-      </div>
-    </>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Quiz />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/home" element={
+            <CheckAuth>
+              <Qwiz />
+            </CheckAuth>
+          } />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
+
+export default App;
