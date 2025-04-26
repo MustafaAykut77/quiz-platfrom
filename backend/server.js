@@ -1,10 +1,10 @@
 import express from "express";
 const app = express();
-const port = 5173;
+const port = 3000;
 import { Server } from 'socket.io';
 const io = new Server(port, {
   cors:{
-    origin: ["http://localhost:5173/"],
+    origin: "http://localhost:5173",
   }
 });
 

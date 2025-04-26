@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const socket = io("http://localhost:5173");
+const socket = io("http://localhost:3000");
 
 const Quiz = () => {
   const [code, setCode] = useState('');
