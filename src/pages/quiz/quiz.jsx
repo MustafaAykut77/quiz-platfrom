@@ -31,15 +31,20 @@ const Quiz = () => {
           </Avatar>
         </Button>
 
+        <div className="absolute top-[300px] left-1/2 transform -translate-x-1/2"> 
+          <img className="flex" src="\logo.png" alt="Logo" />
+        </div>
+
         <Input
-          className={"text-amber-100"}
+          className={"text-black"}
           placeholder="Quiz Kodunu Girin"
           value={code}
           onChange={handleInputChange}
+          style={{ border: '4px solid black' }}
         />
         <Button
           variant="destructive"
-          className={"text-amber-100 h-13 w-15"}
+          className={"text-amber-100 h-12 w-25"}
           type="button"
           onClick={handleJoinQuiz}
         >
