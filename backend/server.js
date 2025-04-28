@@ -1,24 +1,60 @@
 import express from "express";
+import mongoose from "mongoose";
+import { Server } from 'socket.io';
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const app = express();
 const port = 3000;
-import { Server } from 'socket.io';
-const io = new Server(port, {
-  cors:{
-    origin: "http://localhost:5173",
-  }
+const MONGOURL = process.env.MONGO_URL; // .env içindeki isme göre burayı ayarla
+
+// Kullanıcı modeli
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
 });
 
-io.on("connection", socket => {
-    console.log(socket.id);
+const UserModel = mongoose.model("users", userSchema);
+
+// MongoDB bağlantısı
+mongoose.connect(MONGOURL)
+.then(() => {
+  console.log("Database is connected successfully.");
+
+  // Express server başlatılıyor
+  const server = app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+
+  // Socket.io server başlatılıyor
+  const io = new Server(server, {
+    cors: {
+      origin: "http://localhost:5173",
+    }
+  });
+
+  io.on("connection", (socket) => {
+    console.log(`New connection: ${socket.id}`);
     socket.on("send-code", (code) => {
-    console.log(code); 
-    })
-  })
+      console.log(code);
+    });
+  });
 
+})
+.catch((error) => console.log(error));
+
+// Express endpoint
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World!');
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.get("/getUsers", async (req, res) => {
+  try {
+    const userData = await UserModel.find();
+    res.json(userData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching users" });
+  }
 });

@@ -31,7 +31,7 @@ const Quiz = () => {
           </Avatar>
         </Button>
 
-        <div className="absolute top-[300px] left-1/2 transform -translate-x-1/2"> 
+        <div className="top-[300px] left-1/2 transform -translate-x-1/2"> 
           <img className="flex" src="\logo.png" alt="Logo" />
         </div>
 
