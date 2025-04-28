@@ -7,9 +7,8 @@ dotenv.config();
 
 const app = express();
 const port = 3000;
-const MONGOURL = process.env.MONGO_URL; // .env içindeki isme göre burayı ayarla
+const MONGOURL = process.env.MONGO_URL;
 
-// Kullanıcı modeli
 const userSchema = new mongoose.Schema({
   name: String,
   email: String,
@@ -17,17 +16,14 @@ const userSchema = new mongoose.Schema({
 
 const UserModel = mongoose.model("users", userSchema);
 
-// MongoDB bağlantısı
 mongoose.connect(MONGOURL)
 .then(() => {
   console.log("Database is connected successfully.");
 
-  // Express server başlatılıyor
   const server = app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
   });
 
-  // Socket.io server başlatılıyor
   const io = new Server(server, {
     cors: {
       origin: "http://localhost:5173",
@@ -44,7 +40,6 @@ mongoose.connect(MONGOURL)
 })
 .catch((error) => console.log(error));
 
-// Express endpoint
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
