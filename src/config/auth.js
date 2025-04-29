@@ -13,7 +13,6 @@ export const doSignInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     
-    //result.user
     return result;
 };
 

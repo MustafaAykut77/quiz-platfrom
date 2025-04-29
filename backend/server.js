@@ -1,11 +1,17 @@
 import express from "express";
 import mongoose from "mongoose";
 import { Server } from 'socket.io';
+import { authToken } from "./authToken.js";
+import cors from "cors"
 import dotenv from "dotenv";
-
 dotenv.config();
 
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
+}));
 const port = 3000;
 const MONGOURL = process.env.MONGO_URL;
 
@@ -19,26 +25,25 @@ const UserModel = mongoose.model("users", userSchema);
 mongoose.connect(MONGOURL)
 .then(() => {
   console.log("Database is connected successfully.");
-
-  const server = app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
-
-  const io = new Server(server, {
-    cors: {
-      origin: "http://localhost:5173",
-    }
-  });
-
-  io.on("connection", (socket) => {
-    console.log(`New connection: ${socket.id}`);
-    socket.on("send-code", (code) => {
-      console.log(code);
-    });
-  });
-
 })
 .catch((error) => console.log(error));
+
+const server = app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log(`New connection: ${socket.id}`);
+  socket.on("send-code", (code) => {
+    console.log(code);
+  });
+});
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -52,4 +57,8 @@ app.get("/getUsers", async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Error fetching users" });
   }
+});
+
+app.get('/protected', authToken, (req, res) => {
+  res.json({ message: 'This is a protected route', user: req.user });
 });
