@@ -40,8 +40,37 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log(`New connection: ${socket.id}`);
+  
+  // Hata durumlarını ele al
+  socket.on("error", (error) => {
+    console.error(`Socket ${socket.id} error:`, error);
+  });
+  
+  // Bağlantı koptuğunda temizlik yap
+  socket.on("disconnect", (reason) => {
+    console.log(`Socket ${socket.id} disconnected. Reason: ${reason}`);
+  });
+  
+  // Kod alma olayını dinle
   socket.on("send-code", (code) => {
-    console.log(code);
+    console.log(`Received code from ${socket.id}:`, code);
+    // Yanıt gönder (aynı socket'e)
+    socket.emit("receive-code", code);
+    // veya tüm istemcilere yanıt göndermek için:
+    // io.emit("receive-code", code);
+  });
+});
+
+// Düzgün kapanış için olay dinleyicisi ekle
+process.on('SIGINT', () => {
+  console.log('Server shutting down...');
+  io.close();
+  server.close(() => {
+    console.log('Server closed.');
+    mongoose.connection.close(false, () => {
+      console.log('MongoDB connection closed.');
+      process.exit(0);
+    });
   });
 });
 
