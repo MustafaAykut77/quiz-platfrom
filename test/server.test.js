@@ -30,7 +30,7 @@ describe("REST API (localhost:3000)", () => {
     expect(res.text).toBe("Hello World!");
   });
 
-  it("GET /getUsers should return array", async () => {
+  it("GET /getUsers should return user list", async () => {
     const res = await request(BASE_URL).get("/getUsers");
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
