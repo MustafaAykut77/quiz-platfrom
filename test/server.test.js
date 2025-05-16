@@ -4,7 +4,7 @@ const { initializeApp } = require("firebase/app");
 const { getAuth, signInWithEmailAndPassword } = require("firebase/auth");
 require('dotenv').config()
 
-// Firebase config (senin projene göre değiştir)
+// Firebase config
 const firebaseConfig = {
   apiKey: process.env.VITE_API_KEY,
   authDomain: process.env.VITE_AUTH_DOMAIN,
@@ -15,7 +15,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
-// Test kullanıcı bilgileri (Firebase Console'dan oluşturulmuş olmalı)
+// Test kullanıcı bilgileri
 const TEST_USER_EMAIL = "22360859028@ogr.btu.edu.tr";
 const TEST_USER_PASSWORD = "123456";
 
