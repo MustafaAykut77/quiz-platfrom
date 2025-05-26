@@ -23,14 +23,6 @@ const Quiz = () => {
   return (
     <>
       <div className="flex w-full max-w-sm items-center space-x-2 font-bold">
-
-        <Button variant="destructive" className={"absolute right-5 top-20 text-amber-100 h-15 w-15 "} type="button">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-        </Button>
-
         <div className="top-[300px] left-1/2 transform -translate-x-1/2"> 
           <img className="flex" src="\logo.png" alt="Logo" />
         </div>
