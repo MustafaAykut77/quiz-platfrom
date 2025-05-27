@@ -22,10 +22,10 @@ export const getUser = async (req, res) => {
 
 		const user = await UserModel.findOne({ uid });
 		if (!user) {
-		return res.status(404).json({
-			success: false,
-			message: "User not found"
-		});
+			return res.status(404).json({
+				success: false,
+				message: "User not found"
+			});
 		}
 
 		res.json({
@@ -43,7 +43,6 @@ export const getUser = async (req, res) => {
 
 export const createUser = async (req, res) => {
 	try {
-		console.log(req.body);
 		const newUser = new UserModel(req.body);
 		const savedUser = await newUser.save();
 		

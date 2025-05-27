@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "./user.js";
 import quizRoutes from "./quiz.js";
+import gameRoutes from "./game.js";
 
 const app = express();
 
@@ -20,5 +21,6 @@ app.get('/', (req, res) => {
 
 app.use('/api/user', userRoutes);
 app.use('/api/quiz', quizRoutes);
+app.use('/api/game', gameRoutes);
 
 export default app;

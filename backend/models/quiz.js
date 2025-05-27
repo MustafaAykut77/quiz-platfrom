@@ -33,7 +33,7 @@ const quizSchema = new mongoose.Schema({
             type: String,
             trim: true,
             minlength: 2,
-            maxlength: 256
+            maxlength: 1024
         },
         img: {
             type: String
@@ -44,7 +44,7 @@ const quizSchema = new mongoose.Schema({
                 required: true,
                 trim: true,
                 minlength: 1,
-                maxlength: 128
+                maxlength: 1024
             },
             img: {
                 type: String
