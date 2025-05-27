@@ -10,16 +10,21 @@ const Header = () => {
     const { userLoggedIn } = useAuth()
     
     return (
-        <nav className='flex flex-row gap-x-4 w-full z-20 fixed top-0 left-0 h-14 border-b place-content-between items-center bg-[#333446] px-4'>
+        <nav className='flex flex-row gap-x-4 w-full z-20 fixed top-0 left-0 h-14 border-b place-content-between items-center bg-[var(--secondary-bg)] px-4'>
             <div className='flex flex-row gap-x-4 items-center'>
                 {
                     userLoggedIn
                         ?
                         <>
-
+                            <Link 
+                                to="/" 
+                                className='px-4 py-2 text-sm font-medium border-1 border-[var(--secondary-border)] rounded-full hover:scale-105 hover:shadow-md transition-all duration-200'
+                            >
+                                <img src='logo.png' alt='logo' className='h-6 w-6'/>
+                            </Link>
                             <div 
                                 onClick={() => { doSignOut().then(() => { navigate('/login') }) }} 
-                                className='px-4 py-2 text-sm font-medium text-white hover:scale-105 hover:shadow-md transition-all duration-200 hover:!text-white cursor-pointer'
+                                className='px-4 py-2 text-sm font-medium border-1 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer'
                             >
                                 Çıkış Yap
                             </div>
@@ -28,19 +33,19 @@ const Header = () => {
                         <>
                             <Link 
                                 to="/" 
-                                className='px-4 py-2 text-sm font-medium text-white hover:scale-105 hover:shadow-md transition-all duration-200 hover:!text-white'
+                                className='px-4 py-2 text-sm font-medium border-1 border-[var(--secondary-border)] rounded-full hover:scale-105 hover:shadow-md transition-all duration-200'
                             >
-                                <img src='logo.png' alt='logo' className='h-6 w-6 justify-between'/>
+                                <img src='logo.png' alt='logo' className='h-6 w-6'/>
                             </Link>
                             <Link 
                                 to="/login" 
-                                className='px-4 py-2 text-sm font-medium text-white hover:scale-105 hover:shadow-md transition-all duration-200 hover:!text-white'
+                                className='px-4 py-2 text-sm font-medium border-1 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200'
                             >
                                 Giriş Yap
                             </Link>
                             <Link 
                                 to="/register" 
-                                className='px-4 py-2 text-sm font-medium text-white hover:scale-105 hover:shadow-md transition-all duration-200 hover:!text-white'
+                                className='px-4 py-2 text-sm font-medium  border-1 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200'
                             >
                                 Kayıt Ol
                             </Link> 

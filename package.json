@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "server": "node backend/server.js",
+    "server": "nodemon backend/server.js",
     "test": "jest",
     "dev": "vite",
     "build": "vite build",
