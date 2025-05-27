@@ -30,7 +30,7 @@ export const getGame = async (req, res) => {
 
         res.json({
             success: true,
-            data: Game
+            data: game
         });
     } catch (error) {
         console.error("Error fetching game by code:", error);
