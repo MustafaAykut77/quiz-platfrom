@@ -4,6 +4,8 @@ import { useAuth } from '@/src/contexts/authContext/page'
 import { doSignOut } from '@/src/config/auth'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { BiLogOut, BiHome, BiLogIn } from "react-icons/bi";
+import { FaHatWizard } from "react-icons/fa6";
 
 const Header = () => {
     const navigate = useNavigate()
@@ -22,12 +24,20 @@ const Header = () => {
                             >
                                 <img src='logo.png' alt='logo' className='h-6 w-6'/>
                             </Link>
-                            <div 
-                                onClick={() => { doSignOut().then(() => { navigate('/login') }) }} 
-                                className='px-4 py-2 text-sm font-medium border-1 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer'
+                            <Link 
+                                to="/home" 
+                                className='flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer'
                             >
-                                Çıkış Yap
-                            </div>
+                                <BiHome />Ana Sayfa
+                                
+                            </Link>
+                            <Link 
+                                to="/"
+                                onClick={() => { doSignOut() }} 
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer"
+                            >
+                                <BiLogOut /> Çıkış Yap
+                            </Link>
                         </>
                         :
                         <>
@@ -39,15 +49,15 @@ const Header = () => {
                             </Link>
                             <Link 
                                 to="/login" 
-                                className='px-4 py-2 text-sm font-medium border-1 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200'
+                                className='flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer'
                             >
-                                Giriş Yap
+                                <BiLogIn />Giriş Yap
                             </Link>
                             <Link 
                                 to="/register" 
-                                className='px-4 py-2 text-sm font-medium  border-1 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200'
+                                className='flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer'
                             >
-                                Kayıt Ol
+                                <FaHatWizard/ > Kayıt Ol
                             </Link> 
                         </>
                 }
