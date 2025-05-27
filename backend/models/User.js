@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
   uid: {
-    type: Number,
+    type: String,
     required: true,
     unique: true
   },
@@ -20,8 +20,6 @@ const userSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-
-userSchema.index({ uid: 1 });
 
 const UserModel = mongoose.model('User', userSchema);
 
