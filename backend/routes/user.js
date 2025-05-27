@@ -4,7 +4,7 @@ import { authToken } from "../middleware/authToken.js";
 
 const userRoutes = express.Router();
 
-userRoutes.get("/:uid", getUser);
+userRoutes.get("/get/:uid", getUser);
 userRoutes.post("/create", createUser);
 
 userRoutes.get("/all", getAllUsers);

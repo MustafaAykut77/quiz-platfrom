@@ -4,7 +4,7 @@ import fs from "fs";
 const serviceAccount = JSON.parse(fs.readFileSync("./firebaseAdmin.json"));
 
 const app = initializeApp({
-  credential: cert(serviceAccount)
+  	credential: cert(serviceAccount)
 });
 
 const auth = getAuth(app);
