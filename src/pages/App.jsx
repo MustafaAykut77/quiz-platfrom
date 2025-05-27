@@ -9,6 +9,7 @@ import Qwiz from './Qwiz';
 import CheckAuth from "../controllers/CheckAuth";
 import { AuthProvider } from "../contexts/authContext/page";
 import Header from "@/src/Components/Header"
+import Footer from "../Components/Footer";
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
           } />
         </Routes>
       </BrowserRouter>
+      <Footer/ >
     </AuthProvider>
   );
 }
