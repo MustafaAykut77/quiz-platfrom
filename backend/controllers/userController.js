@@ -8,10 +8,29 @@ export const getUsers = async (req, res) => {
       data: userData
     });
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error('Error fetching users:', error);
     res.status(500).json({ 
       success: false,
-      message: "Error fetching users"
+      message: "Error fetching users" 
+    });
+  }
+};
+
+export const createUser = async (req, res) => {
+  try {
+    const { uid, username, profileImage } = req.body;
+    const newUser = new UserModel({ uid, username, profileImage });
+    const savedUser = await newUser.save();
+    
+    res.status(201).json({
+      success: true,
+      data: savedUser
+    });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ 
+      success: false,
+      message: "Error creating user" 
     });
   }
 };

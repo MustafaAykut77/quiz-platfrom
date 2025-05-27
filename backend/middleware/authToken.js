@@ -1,6 +1,6 @@
 import { auth } from "../config/firebase-config.js"
 
-const authToken = async (req, res, next) => {
+export const authToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Unauthorized: No token provided' });
@@ -16,4 +16,3 @@ const authToken = async (req, res, next) => {
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
   }
 };
-export { authToken };
