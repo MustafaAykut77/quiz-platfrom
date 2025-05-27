@@ -22,21 +22,19 @@ const Quiz = () => {
 
   return (
     <>
+      <div className="flex justify-center my-4"> 
+          <img className="w-24 h-24" src="\logo.png" alt="Logo" />
+      </div>
       <div className="flex w-full max-w-sm items-center space-x-2 font-bold">
-        <div className="top-[300px] left-1/2 transform -translate-x-1/2"> 
-          <img className="flex" src="\logo.png" alt="Logo" />
-        </div>
-
         <Input
-          className={"text-black"}
+          className={"text-black border-2"}
           placeholder="Quiz Kodunu Girin"
           value={code}
           onChange={handleInputChange}
-          style={{ border: '4px solid black' }}
         />
         <Button
           variant="destructive"
-          className={"text-amber-100 h-12 w-25"}
+          className={"text-white h-12 w-25"}
           type="button"
           onClick={handleJoinQuiz}
         >

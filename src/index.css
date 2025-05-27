@@ -61,7 +61,11 @@
   color: rgba(255, 255, 255, 0.87);
 
   --background: #7F8CAA;
+  --secondary-bg: #333446;
   --text: #B8CFCE;
+  --secondary-text: #333446;
+  --border: #333446;
+  --secondary-border: #B8CFCE;
 }
 
 a {
