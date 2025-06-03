@@ -9,7 +9,7 @@ export const authToken = async (req, res, next) => {
 	const idToken = authHeader.split('Bearer ')[1];
 	try {
 		const decodedToken = await auth.verifyIdToken(idToken);
-		req.user = decodedToken;
+		req.userID = decodedToken;
 		next();
 	} catch (error) {
 		console.error('Error verifying token:', error);
