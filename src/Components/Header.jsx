@@ -14,16 +14,16 @@ const Header = () => {
     return (
         <nav className='flex flex-row gap-x-4 w-full z-20 fixed top-0 left-0 h-14 place-content-between items-center bg-linear-to-l from-[var(--background)] to-[var(--secondary-bg)] px-4'>
             <div className='flex flex-row gap-x-4 items-center'>
-                {
+                    <Link 
+                        to="/" 
+                        className='px-4 py-2 text-sm font-medium border-2 border-[var(--secondary-border)] rounded-full hover:scale-105 hover:shadow-md transition-all duration-200'
+                    >
+                        <img src='logo.png' alt='logo' className='h-6 w-6'/>
+                    </Link>
+                    {
                     userLoggedIn
                         ?
                         <>
-                            <Link 
-                                to="/" 
-                                className='px-4 py-2 text-sm font-medium border-2 border-[var(--secondary-border)] rounded-full hover:scale-105 hover:shadow-md transition-all duration-200'
-                            >
-                                <img src='logo.png' alt='logo' className='h-6 w-6'/>
-                            </Link>
                             <Link 
                                 to="/home" 
                                 className='flex items-center gap-2 px-4 py-2 text-sm font-medium border-2 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer'
@@ -49,12 +49,6 @@ const Header = () => {
                         </>
                         :
                         <>
-                            <Link 
-                                to="/" 
-                                className='px-4 py-2 text-sm font-medium border-2 border-[var(--secondary-border)] rounded-full hover:scale-105 hover:shadow-md transition-all duration-200'
-                            >
-                                <img src='logo.png' alt='logo' className='h-6 w-6'/>
-                            </Link>
                             <Link 
                                 to="/login" 
                                 className='flex items-center gap-2 px-4 py-2 text-sm font-medium border-2 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer'
