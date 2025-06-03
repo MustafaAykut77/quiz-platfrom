@@ -9,7 +9,7 @@ import Qwiz from './Qwiz';
 import CheckAuth from "../controllers/CheckAuth";
 import { AuthProvider } from "../contexts/authContext/page";
 import Header from "@/src/Components/Header"
-import Footer from "../Components/Footer";
+import Footer from "@/src/Components/Footer";
 
 const App = () => {
   return (

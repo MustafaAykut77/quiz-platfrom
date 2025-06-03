@@ -23,7 +23,7 @@ const Quiz = () => {
   return (
     <>
       <div className="flex justify-center my-4"> 
-          <img className="w-24 h-24" src="\logo.png" alt="Logo" />
+          <img className="w-24 h-24" draggable="false" src="\logo.png" alt="Logo" />
       </div>
       <div className="flex w-full max-w-sm items-center space-x-2 font-bold">
         <Input
