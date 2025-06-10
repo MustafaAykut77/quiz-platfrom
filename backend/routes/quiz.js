@@ -7,6 +7,6 @@ const quizRoutes = express.Router();
 quizRoutes.get("/get/:quizid", authToken, getQuiz);
 quizRoutes.get("/all", authToken, getAllQuizzes);
 quizRoutes.post("/create", authToken, createQuiz);
-quizRoutes.post("/delete", authToken, deleteQuiz);
+quizRoutes.delete("/delete", authToken, deleteQuiz);
 
 export default quizRoutes;
