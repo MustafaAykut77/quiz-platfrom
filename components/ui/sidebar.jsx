@@ -133,7 +133,7 @@ function SidebarProvider({
 }
 
 function Sidebar({
-  side = "left",
+  side = "right",
   variant = "sidebar",
   collapsible = "offcanvas",
   className,
@@ -232,7 +232,7 @@ function SidebarTrigger({
         toggleSidebar()
       }}
       {...props}>
-      {open ? <BiSolidLeftArrowAlt /> : <BiSolidRightArrowAlt />}
+      {open ? <BiSolidRightArrowAlt /> : <BiSolidLeftArrowAlt />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
