@@ -1,8 +1,7 @@
 import '../index.css';
 import "../config/firebase-config";
-import { useAuth } from '../contexts/authContext/page';
 import { useState, useEffect, useMemo } from "react";
-import { getUser } from "@/src/controllers/UserRequest"
+import { useAuth } from "@/src/contexts/authContext/page";
 
 import {
   getCoreRowModel,
@@ -25,6 +24,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const Qwiz = () => {
+
+  const { currentUser } = useAuth()
+  const token = currentUser?.stsTokenManager?.accessToken
+  console.log('Token:', token)
+
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
