@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, Save, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from "@/src/contexts/authContext/page";
+import { createQuiz, getQuiz, getAllQuizzes } from '@/src/controllers/QuizRequest';
 
 const QuizCreator = () => {
+
+  const { currentUser } = useAuth()
+
   const [quiz, setQuiz] = useState({
-    quizid: '',
-    creatorid: '',
     quizName: '',
     quizCategory: '',
-    isPrivate: false,
     questions: []
   });
 
@@ -118,10 +120,6 @@ const QuizCreator = () => {
       newErrors.quizCategory = 'Kategori 2-50 karakter arasında olmalıdır';
     }
 
-    if (!quiz.creatorid) {
-      newErrors.creatorid = 'Oluşturan ID gereklidir';
-    }
-
     if (quiz.questions.length === 0) {
       newErrors.questions = 'En az bir soru eklemelisiniz';
     }
@@ -156,19 +154,10 @@ const QuizCreator = () => {
     if (validateForm()) {
       const quizData = {
         ...quiz,
-        quizid: quiz.quizid || `quiz_${Date.now()}`, // otomatik ID oluştur
       };
       
       try {
-        const response = await fetch('/api/quizzes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(quizData)
-        });
-
-        const result = await response.json();
+        const result = await createQuiz(quizData);
 
         if (result.success) {
           alert('Quiz başarıyla oluşturuldu!');
@@ -176,11 +165,8 @@ const QuizCreator = () => {
           
           // Formu temizle
           setQuiz({
-            quizid: '',
-            creatorid: '',
             quizName: '',
             quizCategory: '',
-            isPrivate: false,
             questions: []
           });
           setErrors({});
@@ -195,82 +181,104 @@ const QuizCreator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+    <div style={{ 
+      minHeight: '100vh', 
+      backgroundColor: 'var(--background)',
+      color: 'var(--secondary-text)',
+      fontFamily: 'cursive'
+    }}>
+      <div className="max-w-4xl mx-auto p-4">
+        <div style={{
+          backgroundColor: 'var(--secondary-bg)',
+          borderRadius: '1rem',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          padding: '2rem',
+          border: `1px solid var(--border)`
+        }}>
+          <h1 style={{
+            fontSize: '2rem',
+            fontWeight: 'bold',
+            color: 'var(--secondary-text)',
+            marginBottom: '2rem',
+            textAlign: 'center'
+          }}>
             🎯 Yeni Quiz Oluştur
           </h1>
 
           {/* Quiz Temel Bilgileri */}
-          <div className="bg-gray-50 rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">Quiz Bilgileri</h2>
+          <div style={{
+            backgroundColor: 'var(--background)',
+            borderRadius: '0.75rem',
+            padding: '1.5rem',
+            marginBottom: '2rem',
+            border: `1px solid var(--border)`
+          }}>
+            <h2 style={{
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              color: 'var(--secondary-text)',
+              marginBottom: '1rem'
+            }}>
+              Quiz Bilgileri
+            </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: 'var(--text)',
+                  marginBottom: '0.5rem'
+                }}>
                   Quiz Adı *
                 </label>
                 <input
                   type="text"
                   value={quiz.quizName}
                   onChange={(e) => setQuiz(prev => ({ ...prev, quizName: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem 1rem',
+                    border: `1px solid var(--border)`,
+                    borderRadius: '0.5rem',
+                    backgroundColor: 'var(--secondary-bg)',
+                    color: 'var(--secondary-text)',
+                    outline: 'none'
+                  }}
                   placeholder="Quiz adını girin..."
                   maxLength={50}
                 />
-                {errors.quizName && <p className="text-red-500 text-sm mt-1">{errors.quizName}</p>}
+                {errors.quizName && <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.quizName}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: 'var(--text)',
+                  marginBottom: '0.5rem'
+                }}>
                   Kategori *
                 </label>
                 <input
                   type="text"
                   value={quiz.quizCategory}
                   onChange={(e) => setQuiz(prev => ({ ...prev, quizCategory: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem 1rem',
+                    border: `1px solid var(--border)`,
+                    borderRadius: '0.5rem',
+                    backgroundColor: 'var(--secondary-bg)',
+                    color: 'var(--secondary-text)',
+                    outline: 'none'
+                  }}
                   placeholder="Kategori girin..."
                   maxLength={50}
                 />
-                {errors.quizCategory && <p className="text-red-500 text-sm mt-1">{errors.quizCategory}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Oluşturan ID *
-                </label>
-                <input
-                  type="text"
-                  value={quiz.creatorid}
-                  onChange={(e) => setQuiz(prev => ({ ...prev, creatorid: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                  placeholder="Kullanıcı ID'nizi girin..."
-                />
-                {errors.creatorid && <p className="text-red-500 text-sm mt-1">{errors.creatorid}</p>}
-              </div>
-
-              <div className="flex items-center">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={quiz.isPrivate}
-                    onChange={(e) => setQuiz(prev => ({ ...prev, isPrivate: e.target.checked }))}
-                    className="sr-only"
-                  />
-                  <div className="relative">
-                    <div className={`w-12 h-6 rounded-full transition-colors ${quiz.isPrivate ? 'bg-blue-500' : 'bg-gray-300'}`}>
-                      <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${quiz.isPrivate ? 'translate-x-6' : 'translate-x-0'}`}></div>
-                    </div>
-                  </div>
-                  <span className="ml-3 text-sm font-medium text-gray-700 flex items-center">
-                    {quiz.isPrivate ? <EyeOff className="w-4 h-4 mr-1" /> : <Eye className="w-4 h-4 mr-1" />}
-                    {quiz.isPrivate ? 'Özel Quiz' : 'Herkese Açık'}
-                  </span>
-                </label>
+                {errors.quizCategory && <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.quizCategory}</p>}
               </div>
             </div>
           </div>
@@ -278,60 +286,124 @@ const QuizCreator = () => {
           {/* Sorular */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-gray-700">
+              <h2 style={{
+                fontSize: '1.25rem',
+                fontWeight: '600',
+                color: 'var(--secondary-text)'
+              }}>
                 Sorular ({quiz.questions.length})
               </h2>
               <button
                 onClick={addQuestion}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
+                style={{
+                  backgroundColor: 'var(--text)',
+                  color: 'var(--secondary-bg)',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.5rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontWeight: '500',
+                  transition: 'all 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = 'var(--secondary-text)'}
+                onMouseOut={(e) => e.target.style.backgroundColor = 'var(--text)'}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Soru Ekle
               </button>
             </div>
 
-            {errors.questions && <p className="text-red-500 text-sm mb-4">{errors.questions}</p>}
+            {errors.questions && <p style={{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '1rem' }}>{errors.questions}</p>}
 
             {quiz.questions.map((question, qIndex) => (
-              <div key={qIndex} className="bg-gray-50 rounded-xl p-6 mb-6 border-l-4 border-blue-500">
+              <div key={qIndex} style={{
+                backgroundColor: 'var(--background)',
+                borderRadius: '0.75rem',
+                padding: '1.5rem',
+                marginBottom: '1.5rem',
+                borderLeft: `4px solid var(--text)`,
+                border: `1px solid var(--border)`
+              }}>
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-medium text-gray-800">
+                  <h3 style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '500',
+                    color: 'var(--secondary-text)'
+                  }}>
                     Soru {qIndex + 1}
                   </h3>
                   <button
                     onClick={() => removeQuestion(qIndex)}
-                    className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
+                    style={{
+                      color: '#ef4444',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '0.25rem',
+                      borderRadius: '0.25rem'
+                    }}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: 'var(--text)',
+                    marginBottom: '0.5rem'
+                  }}>
                     Soru Metni *
                   </label>
                   <textarea
                     value={question.question}
                     onChange={(e) => updateQuestion(qIndex, 'question', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem 1rem',
+                      border: `1px solid var(--border)`,
+                      borderRadius: '0.5rem',
+                      backgroundColor: 'var(--secondary-bg)',
+                      color: 'var(--secondary-text)',
+                      outline: 'none',
+                      resize: 'vertical'
+                    }}
                     rows={3}
                     placeholder="Sorunuzu yazın..."
                     maxLength={1024}
                   />
                   {errors[`question_${qIndex}`] && (
-                    <p className="text-red-500 text-sm mt-1">{errors[`question_${qIndex}`]}</p>
+                    <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors[`question_${qIndex}`]}</p>
                   )}
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: 'var(--text)',
+                    marginBottom: '0.5rem'
+                  }}>
                     Soru Görseli (URL)
                   </label>
                   <input
                     type="url"
                     value={question.img}
                     onChange={(e) => updateQuestion(qIndex, 'img', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem 1rem',
+                      border: `1px solid var(--border)`,
+                      borderRadius: '0.5rem',
+                      backgroundColor: 'var(--secondary-bg)',
+                      color: 'var(--secondary-text)',
+                      outline: 'none'
+                    }}
                     placeholder="https://example.com/image.jpg"
                   />
                 </div>
@@ -339,12 +411,25 @@ const QuizCreator = () => {
                 {/* Cevaplar */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label style={{
+                      display: 'block',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      color: 'var(--text)'
+                    }}>
                       Cevap Seçenekleri *
                     </label>
                     <button
                       onClick={() => addAnswer(qIndex)}
-                      className=" hover:text-blue-700 text-sm flex items-center transition-colors text-gray-900"
+                      style={{
+                        color: 'var(--text)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
                     >
                       <Plus className="w-3 h-3 mr-1" />
                       Cevap Ekle
@@ -352,14 +437,20 @@ const QuizCreator = () => {
                   </div>
 
                   {errors[`answers_${qIndex}`] && (
-                    <p className="text-red-500 text-sm mb-2">{errors[`answers_${qIndex}`]}</p>
+                    <p style={{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '0.5rem' }}>{errors[`answers_${qIndex}`]}</p>
                   )}
                   {errors[`correct_${qIndex}`] && (
-                    <p className="text-red-500 text-sm mb-2">{errors[`correct_${qIndex}`]}</p>
+                    <p style={{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '0.5rem' }}>{errors[`correct_${qIndex}`]}</p>
                   )}
 
                   {question.answers.map((answer, aIndex) => (
-                    <div key={aIndex} className="bg-white rounded-lg p-4 mb-3 border">
+                    <div key={aIndex} style={{
+                      backgroundColor: 'var(--secondary-bg)',
+                      borderRadius: '0.5rem',
+                      padding: '1rem',
+                      marginBottom: '0.75rem',
+                      border: `1px solid var(--border)`
+                    }}>
                       <div className="flex items-start gap-3">
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div>
@@ -367,19 +458,35 @@ const QuizCreator = () => {
                               type="text"
                               value={answer.answer}
                               onChange={(e) => updateAnswer(qIndex, aIndex, 'answer', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                              style={{
+                                width: '100%',
+                                padding: '0.5rem 0.75rem',
+                                border: `1px solid var(--border)`,
+                                borderRadius: '0.25rem',
+                                backgroundColor: 'var(--background)',
+                                color: 'var(--secondary-text)',
+                                outline: 'none'
+                              }}
                               placeholder={`Cevap ${aIndex + 1}`}
                               maxLength={1024}
                             />
                             {errors[`answer_${qIndex}_${aIndex}`] && (
-                              <p className="text-red-500 text-xs mt-1">{errors[`answer_${qIndex}_${aIndex}`]}</p>
+                              <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors[`answer_${qIndex}_${aIndex}`]}</p>
                             )}
                           </div>
                           <input
                             type="url"
                             value={answer.img}
                             onChange={(e) => updateAnswer(qIndex, aIndex, 'img', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                            style={{
+                              width: '100%',
+                              padding: '0.5rem 0.75rem',
+                              border: `1px solid var(--border)`,
+                              borderRadius: '0.25rem',
+                              backgroundColor: 'var(--background)',
+                              color: 'var(--secondary-text)',
+                              outline: 'none'
+                            }}
                             placeholder="Cevap görseli (URL)"
                           />
                         </div>
@@ -387,11 +494,17 @@ const QuizCreator = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setCorrectAnswer(qIndex, aIndex)}
-                            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                              answer.isCorrect 
-                                ? 'bg-green-500 text-white' 
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            }`}
+                            style={{
+                              padding: '0.5rem 0.75rem',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.875rem',
+                              fontWeight: '500',
+                              border: 'none',
+                              cursor: 'pointer',
+                              backgroundColor: answer.isCorrect ? '#10b981' : 'var(--background)',
+                              color: answer.isCorrect ? 'white' : 'var(--text)',
+                              transition: 'all 0.2s'
+                            }}
                           >
                             {answer.isCorrect ? '✓ Doğru' : 'Doğru?'}
                           </button>
@@ -399,7 +512,14 @@ const QuizCreator = () => {
                           {question.answers.length > 2 && (
                             <button
                               onClick={() => removeAnswer(qIndex, aIndex)}
-                              className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
+                              style={{
+                                color: '#ef4444',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: '0.25rem',
+                                borderRadius: '0.25rem'
+                              }}
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -417,7 +537,21 @@ const QuizCreator = () => {
           <div className="text-center">
             <button
               onClick={saveQuiz}
-              className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-semibold flex items-center mx-auto transition-colors"
+              style={{
+                backgroundColor: '#10b981',
+                color: 'white',
+                padding: '0.75rem 2rem',
+                borderRadius: '0.5rem',
+                fontSize: '1.125rem',
+                fontWeight: '600',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                transition: 'all 0.2s'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#059669'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#10b981'}
             >
               <Save className="w-5 h-5 mr-2" />
               Quiz'i Kaydet
@@ -427,6 +561,6 @@ const QuizCreator = () => {
       </div>
     </div>
   );
-};
+}
 
 export default QuizCreator;
