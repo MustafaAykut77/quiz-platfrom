@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Button } from "@/components/ui/button";
+import { useParams } from 'react-router-dom';
+import { getQuiz } from '@/src/controllers/QuizRequest';
 
 const Quiz = () => {
+    const { quizId } = useParams();
     const backgroundMusic = useRef(new Audio('/background-music.mp3'));
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -11,57 +13,51 @@ const Quiz = () => {
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [showFeedback, setShowFeedback] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const [quizData, setQuizData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Örnek quiz soruları
-    const questions = [
-        {
-            question: "JavaScript'te 'let' ve 'const' arasındaki fark nedir?",
-            options: [
-                "let yeniden atanabilir, const atanamazken",
-                "const değişkenler her zaman null'dır",
-                "let global scope'ta çalışır, const çalışmaz",
-                "Hiçbir fark yoktur"
-            ],
-            correctAnswer: 0
-        },
-        {
-            question: "React'ta 'state' ve 'props' arasındaki temel fark nedir?",
-            options: [
-                "State sadece class componentlerde kullanılır",
-                "Props değiştirilebilir, state değiştirilemez",
-                "State component içinde değiştirilebilir, props üst componentten gelir",
-                "Hiçbir fark yoktur"
-            ],
-            correctAnswer: 2
-        },
-        {
-            question: "HTML5'te yeni eklenen input tipleri hangileridir?",
-            options: [
-                "text, password, submit",
-                "date, email, tel, number",
-                "checkbox, radio, file",
-                "button, reset, hidden"
-            ],
-            correctAnswer: 1
-        },
-        {
-            question: "CSS'te 'flexbox' özelliği ne işe yarar?",
-            options: [
-                "Sadece metin hizalama için kullanılır",
-                "Grid sistemini tamamen değiştirir",
-                "Elementleri esnek bir şekilde düzenler ve hizalar",
-                "Sadece resimleri konumlandırmak için kullanılır"
-            ],
-            correctAnswer: 2
+    // Quiz verilerini çekme
+    useEffect(() => {
+        const fetchQuizData = async () => {
+            try {
+                setLoading(true);
+                const response = await getQuiz(quizId); // QuizCode yerine quizId kullan
+                
+                if (response && response.success) {
+                    setQuizData(response.data);
+                    console.log('Quiz verileri:', response.data);
+                } else {
+                    setError('Quiz verileri alınamadı');
+                    console.error('Quiz fetch hatası:', response);
+                }
+            } catch (err) {
+                setError('Quiz yüklenirken hata oluştu');
+                console.error('Quiz fetch hatası:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (quizId) { // quizId varsa fetch işlemini başlat
+            fetchQuizData();
         }
-    ];
+    }, [quizId]); // dependency array'e quizId ekle
+
+    // Quiz soruları - API'den gelen verileri uygun formata çevirme
+    const questions = quizData?.questions?.map(q => ({
+        question: q.question,
+        options: q.answers?.map(a => a.answer) || [],
+        correctAnswer: q.answers?.findIndex(a => a.isCorrect) || 0,
+        image: q.img || null
+    })) || [];
 
     useEffect(() => {
         // Müziği döngüye al
         backgroundMusic.current.loop = true;
         
         // Quiz başladığında müziği çal
-        if (!showResult) {
+        if (!showResult && quizData) {
             backgroundMusic.current.play().catch(error => {
                 console.log("Müzik çalma hatası:", error);
             });
@@ -78,19 +74,19 @@ const Quiz = () => {
             backgroundMusic.current.pause();
             backgroundMusic.current.currentTime = 0;
         };
-    }, [showResult]);
+    }, [showResult, quizData]);
 
     useEffect(() => {
         let interval = null;
-        if (!showResult && timer > 0 && !showFeedback) {
+        if (!showResult && timer > 0 && !showFeedback && questions.length > 0) {
             interval = setInterval(() => {
                 setTimer((prevTimer) => prevTimer - 1);
             }, 1000);
-        } else if (timer === 0) {
+        } else if (timer === 0 && questions.length > 0) {
             handleNextQuestion();
         }
         return () => clearInterval(interval);
-    }, [timer, showResult, showFeedback]);
+    }, [timer, showResult, showFeedback, questions.length]);
 
     // Ses çalma fonksiyonu
     const playSound = (isCorrect) => {
@@ -153,32 +149,198 @@ const Quiz = () => {
         setIsMuted(!isMuted);
     };
 
+    // Loading durumu
+    if (loading) {
+        return (
+            <main style={{
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'var(--background)',
+                fontFamily: 'cursive'
+            }}>
+                <div style={{
+                    textAlign: 'center',
+                    color: 'var(--secondary-text)'
+                }}>
+                    <div style={{
+                        width: '3rem',
+                        height: '3rem',
+                        border: '4px solid var(--border)',
+                        borderTop: '4px solid var(--text)',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto 1rem auto'
+                    }}></div>
+                    <p>Quiz yükleniyor...</p>
+                </div>
+            </main>
+        );
+    }
+
+    // Error durumu
+    if (error || !quizData) {
+        return (
+            <main style={{
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'var(--background)',
+                fontFamily: 'cursive'
+            }}>
+                <div style={{
+                    textAlign: 'center',
+                    color: 'var(--secondary-text)',
+                    padding: '2rem'
+                }}>
+                    <div style={{
+                        fontSize: '3rem',
+                        marginBottom: '1rem'
+                    }}>😞</div>
+                    <h2 style={{
+                        fontSize: '1.5rem',
+                        marginBottom: '1rem'
+                    }}>Quiz Yüklenemedi</h2>
+                    <p>{error || 'Quiz verileri bulunamadı'}</p>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        style={{
+                            marginTop: '1rem',
+                            padding: '0.5rem 1rem',
+                            backgroundColor: 'var(--text)',
+                            color: 'var(--secondary-bg)',
+                            border: 'none',
+                            borderRadius: '0.5rem',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Yeniden Dene
+                    </button>
+                </div>
+            </main>
+        );
+    }
+
+    // Quiz sorularının mevcut olup olmadığını kontrol et
+    if (questions.length === 0) {
+        return (
+            <main style={{
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'var(--background)',
+                fontFamily: 'cursive'
+            }}>
+                <div style={{
+                    textAlign: 'center',
+                    color: 'var(--secondary-text)'
+                }}>
+                    <p>Bu quiz'de henüz soru bulunmamaktadır.</p>
+                </div>
+            </main>
+        );
+    }
+
     if (showResult) {
         return (
-            <main className="w-full h-screen flex self-center place-content-center place-items-center bg-gray-50">
-                <div className="w-96 space-y-5 p-6 shadow-xl border-2 border-gray-200 rounded-2xl bg-white">
-                    <div className="text-center space-y-4">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <main style={{
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'var(--background)',
+                fontFamily: 'cursive'
+            }}>
+                <div style={{
+                    width: '24rem',
+                    padding: '1.5rem',
+                    backgroundColor: 'var(--secondary-bg)',
+                    borderRadius: '1rem',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    border: `2px solid var(--border)`
+                }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{
+                            width: '4rem',
+                            height: '4rem',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 1rem auto',
+                            border: '2px solid #10b981'
+                        }}>
+                            <svg style={{ width: '2rem', height: '2rem', color: '#10b981' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                         
-                        <h2 className="text-2xl font-bold text-gray-800">Quiz Tamamlandı!</h2>
+                        <h2 style={{
+                            fontSize: '2rem',
+                            fontWeight: 'bold',
+                            color: 'var(--secondary-text)',
+                            marginBottom: '0.5rem'
+                        }}>
+                            {quizData.quizName} Tamamlandı!
+                        </h2>
+
+                        <p style={{
+                            fontSize: '1rem',
+                            color: 'var(--text)',
+                            marginBottom: '1.5rem'
+                        }}>
+                            Kategori: {quizData.quizCategory}
+                        </p>
                         
-                        <div className="space-y-2">
-                            <p className="text-3xl font-bold text-indigo-600">
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <p style={{
+                                fontSize: '3rem',
+                                fontWeight: 'bold',
+                                color: 'var(--text)',
+                                marginBottom: '0.5rem'
+                            }}>
                                 {score} / {questions.length}
                             </p>
-                            <p className="text-sm text-gray-600">
+                            <p style={{
+                                fontSize: '0.875rem',
+                                color: 'var(--text)'
+                            }}>
                                 Başarı Oranı: {Math.round((score / questions.length) * 100)}%
                             </p>
                         </div>
                         
-                        <div className="pt-4">
+                        <div style={{ paddingTop: '1rem' }}>
                             <button
                                 onClick={restartQuiz}
-                                className="w-full px-4 py-2 text-white font-medium rounded-lg bg-indigo-600 hover:bg-indigo-700 hover:shadow-xl transition duration-300"
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem 1rem',
+                                    backgroundColor: 'var(--text)',
+                                    color: 'var(--secondary-bg)',
+                                    fontWeight: '500',
+                                    borderRadius: '0.5rem',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '1rem',
+                                    transition: 'all 0.3s',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                }}
+                                onMouseOver={(e) => {
+                                    e.target.style.backgroundColor = 'var(--secondary-text)';
+                                    e.target.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.backgroundColor = 'var(--text)';
+                                    e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                                }}
                             >
                                 Tekrar Başla
                             </button>
@@ -190,112 +352,276 @@ const Quiz = () => {
     }
 
     return (
-        <main className="w-full h-screen flex self-center place-content-center place-items-center bg-gray-50">
-            <div className="w-full max-w-2xl space-y-5 p-6 shadow-xl border-2 border-gray-200 rounded-2xl bg-white mx-4">
+        <main style={{
+            width: '100%',
+            height: 'calc(100vh - 3.5rem)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'var(--background)',
+            fontFamily: 'cursive',
+            position: 'relative'
+        }}>
+            <div style={{
+                width: '100%',
+                maxWidth: '42rem',
+                padding: '1.5rem',
+                backgroundColor: 'var(--secondary-bg)',
+                borderRadius: '1rem',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                border: `2px solid var(--border)`,
+                margin: '0 1rem'
+            }}>
                 
-                {/* Header */}
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 font-medium">
+                {/* Header - Quiz adı ve kategori bilgisi */}
+                <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                    <h1 style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 'bold',
+                        color: 'var(--secondary-text)',
+                        marginBottom: '0.25rem'
+                    }}>
+                        {quizData.quizName}
+                    </h1>
+                    <p style={{
+                        fontSize: '0.875rem',
+                        color: 'var(--text)'
+                    }}>
+                        Kategori: {quizData.quizCategory}
+                    </p>
+                </div>
+
+                {/* Progress Header */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '1rem'
+                    }}>
+                        <span style={{
+                            fontSize: '0.875rem',
+                            color: 'var(--text)',
+                            fontWeight: '500'
+                        }}>
                             Soru {currentQuestionIndex + 1} / {questions.length}
                         </span>
-                        <span className="text-sm text-indigo-600 font-bold">
+                        <span style={{
+                            fontSize: '0.875rem',
+                            color: 'var(--text)',
+                            fontWeight: 'bold'
+                        }}>
                             {timer}s
                         </span>
                     </div>
                     
                     {/* Progress Bar */}
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                            className="bg-indigo-600 h-2 rounded-full transition-all duration-1000"
-                            style={{ width: `${(timer / 30) * 100}%` }}
-                        ></div>
+                    <div style={{
+                        width: '100%',
+                        backgroundColor: 'var(--background)',
+                        borderRadius: '9999px',
+                        height: '0.5rem',
+                        border: `1px solid var(--border)`
+                    }}>
+                        <div style={{
+                            backgroundColor: 'var(--text)',
+                            height: '100%',
+                            borderRadius: '9999px',
+                            transition: 'all 1s',
+                            width: `${(timer / 30) * 100}%`
+                        }}></div>
                     </div>
                 </div>
 
                 {/* Question */}
-                <div className="space-y-6">
-                    <h2 className="text-xl font-bold text-gray-800 leading-relaxed">
+                <div style={{ marginBottom: '2rem' }}>
+                    {/* Soru görseli varsa göster */}
+                    {questions[currentQuestionIndex].image && (
+                        <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                            <img 
+                                src={questions[currentQuestionIndex].image} 
+                                alt="Soru görseli"
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '200px',
+                                    borderRadius: '0.5rem',
+                                    objectFit: 'contain'
+                                }}
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    <h2 style={{
+                        fontSize: '1.25rem',
+                        fontWeight: 'bold',
+                        color: 'var(--secondary-text)',
+                        lineHeight: '1.6',
+                        marginBottom: '1.5rem'
+                    }}>
                         {questions[currentQuestionIndex].question}
                     </h2>
 
                     {/* Options */}
-                    <div className="space-y-3">
-                        {questions[currentQuestionIndex].options.map((option, index) => (
-                            <button
-                                key={index}
-                                onClick={() => handleAnswerClick(index)}
-                                disabled={selectedAnswer !== null}
-                                className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${
-                                    selectedAnswer === null 
-                                        ? 'border-gray-200 hover:border-indigo-400 hover:shadow-md bg-white text-gray-700'
-                                        : selectedAnswer === index
-                                            ? index === questions[currentQuestionIndex].correctAnswer
-                                                ? 'border-green-500 bg-green-50 text-green-800'
-                                                : 'border-red-500 bg-red-50 text-red-800'
-                                            : index === questions[currentQuestionIndex].correctAnswer
-                                                ? 'border-green-500 bg-green-50 text-green-800'
-                                                : 'border-gray-200 bg-gray-50 text-gray-500'
-                                }`}
-                            >
-                                <div className="flex items-center space-x-3">
-                                    <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold ${
-                                        selectedAnswer === null 
-                                            ? 'border-gray-300 text-gray-500'
-                                            : selectedAnswer === index
-                                                ? index === questions[currentQuestionIndex].correctAnswer
-                                                    ? 'border-green-500 bg-green-500 text-white'
-                                                    : 'border-red-500 bg-red-500 text-white'
-                                                : index === questions[currentQuestionIndex].correctAnswer
-                                                    ? 'border-green-500 bg-green-500 text-white'
-                                                    : 'border-gray-300 text-gray-400'
-                                    }`}>
-                                        {String.fromCharCode(65 + index)}
-                                    </span>
-                                    <span className="font-medium">{option}</span>
-                                </div>
-                            </button>
-                        ))}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {questions[currentQuestionIndex].options.map((option, index) => {
+                            let buttonStyle = {
+                                width: '100%',
+                                padding: '1rem',
+                                textAlign: 'left',
+                                borderRadius: '0.5rem',
+                                border: '2px solid',
+                                transition: 'all 0.2s',
+                                cursor: selectedAnswer !== null ? 'default' : 'pointer',
+                                backgroundColor: 'var(--background)',
+                                color: 'var(--secondary-text)'
+                            };
+
+                            let circleStyle = {
+                                width: '1.5rem',
+                                height: '1.5rem',
+                                borderRadius: '50%',
+                                border: '2px solid',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.75rem',
+                                fontWeight: 'bold'
+                            };
+
+                            if (selectedAnswer === null) {
+                                buttonStyle.borderColor = 'var(--border)';
+                                circleStyle.borderColor = 'var(--border)';
+                                circleStyle.color = 'var(--text)';
+                            } else if (selectedAnswer === index) {
+                                if (index === questions[currentQuestionIndex].correctAnswer) {
+                                    buttonStyle.borderColor = '#10b981';
+                                    buttonStyle.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                                    buttonStyle.color = '#10b981';
+                                    circleStyle.borderColor = '#10b981';
+                                    circleStyle.backgroundColor = '#10b981';
+                                    circleStyle.color = 'white';
+                                } else {
+                                    buttonStyle.borderColor = '#ef4444';
+                                    buttonStyle.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                                    buttonStyle.color = '#ef4444';
+                                    circleStyle.borderColor = '#ef4444';
+                                    circleStyle.backgroundColor = '#ef4444';
+                                    circleStyle.color = 'white';
+                                }
+                            } else if (index === questions[currentQuestionIndex].correctAnswer) {
+                                buttonStyle.borderColor = '#10b981';
+                                buttonStyle.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                                buttonStyle.color = '#10b981';
+                                circleStyle.borderColor = '#10b981';
+                                circleStyle.backgroundColor = '#10b981';
+                                circleStyle.color = 'white';
+                            } else {
+                                buttonStyle.borderColor = 'var(--border)';
+                                buttonStyle.backgroundColor = 'var(--secondary-bg)';
+                                buttonStyle.color = 'var(--text)';
+                                circleStyle.borderColor = 'var(--border)';
+                                circleStyle.color = 'var(--text)';
+                            }
+
+                            return (
+                                <button
+                                    key={index}
+                                    onClick={() => handleAnswerClick(index)}
+                                    disabled={selectedAnswer !== null}
+                                    style={buttonStyle}
+                                    onMouseOver={(e) => {
+                                        if (selectedAnswer === null) {
+                                            e.target.style.borderColor = 'var(--text)';
+                                            e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                                        }
+                                    }}
+                                    onMouseOut={(e) => {
+                                        if (selectedAnswer === null) {
+                                            e.target.style.borderColor = 'var(--border)';
+                                            e.target.style.boxShadow = 'none';
+                                        }
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                        <span style={circleStyle}>
+                                            {String.fromCharCode(65 + index)}
+                                        </span>
+                                        <span style={{ fontWeight: '500' }}>{option}</span>
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
                 {/* Feedback */}
                 {showFeedback && (
-                    <div className={`p-4 rounded-lg border-2 ${
-                        selectedAnswer === questions[currentQuestionIndex].correctAnswer
-                            ? 'border-green-200 bg-green-50'
-                            : 'border-red-200 bg-red-50'
-                    }`}>
-                        <div className="flex items-center space-x-2">
+                    <div style={{
+                        padding: '1rem',
+                        borderRadius: '0.5rem',
+                        border: '2px solid',
+                        borderColor: selectedAnswer === questions[currentQuestionIndex].correctAnswer ? '#10b981' : '#ef4444',
+                        backgroundColor: selectedAnswer === questions[currentQuestionIndex].correctAnswer 
+                            ? 'rgba(16, 185, 129, 0.1)' 
+                            : 'rgba(239, 68, 68, 0.1)',
+                        marginBottom: '1rem'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             {selectedAnswer === questions[currentQuestionIndex].correctAnswer ? (
                                 <>
-                                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg style={{ width: '1.25rem', height: '1.25rem', color: '#10b981' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    <span className="text-green-800 font-medium">Doğru cevap! 🎉</span>
+                                    <span style={{ color: '#10b981', fontWeight: '500' }}>Doğru cevap! 🎉</span>
                                 </>
                             ) : (
                                 <>
-                                    <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg style={{ width: '1.25rem', height: '1.25rem', color: '#ef4444' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    <span className="text-red-800 font-medium">Yanlış cevap! 😢</span>
+                                    <span style={{ color: '#ef4444', fontWeight: '500' }}>Yanlış cevap! 😢</span>
                                 </>
                             )}
                         </div>
                     </div>
                 )}
-
-                {/* Ses Kontrol Butonu */}
-                <div className="absolute top-30 right-30">
-                    <button 
-                        onClick={toggleMusic}
-                        className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
-                    >
-                        {isMuted ? "🔇" : "🔊"}
-                    </button>
-                </div>
             </div>
+
+            {/* Ses Kontrol Butonu */}
+            <button 
+                onClick={toggleMusic}
+                style={{
+                    position: 'absolute',
+                    top: '1rem',
+                    right: '1rem',
+                    padding: '0.5rem',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--secondary-bg)',
+                    border: `1px solid var(--border)`,
+                    cursor: 'pointer',
+                    fontSize: '1.25rem',
+                    transition: 'all 0.2s'
+                }}
+                onMouseOver={(e) => {
+                    e.target.style.backgroundColor = 'var(--background)';
+                }}
+                onMouseOut={(e) => {
+                    e.target.style.backgroundColor = 'var(--secondary-bg)';
+                }}
+            >
+                {isMuted ? "🔇" : "🔊"}
+            </button>
+
+            {/* CSS animation için style tag */}
+            <style>{`
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </main>
     );
 };

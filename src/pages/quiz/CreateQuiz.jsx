@@ -5,8 +5,6 @@ import { createQuiz, getQuiz, getAllQuizzes } from '@/src/controllers/QuizReques
 
 const QuizCreator = () => {
 
-  const { currentUser } = useAuth()
-
   const [quiz, setQuiz] = useState({
     quizName: '',
     quizCategory: '',

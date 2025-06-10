@@ -1,13 +1,13 @@
 import { io } from "socket.io-client";
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 // Component Imports
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const socket = io("http://localhost:3000");
-
 const QuizCode = () => {
+  const navigate = useNavigate();
   const [code, setCode] = useState('');
 
   const handleInputChange = (event) => {
@@ -15,8 +15,7 @@ const QuizCode = () => {
   };
 
   const handleJoinQuiz = () => {
-    socket.emit("send-code", code);
-    console.log("Gönderilen Kod:", code);
+    navigate(`/game/${code}`);
   };
 
   return (
