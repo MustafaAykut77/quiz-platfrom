@@ -1,25 +1,10 @@
 import QuizModel from "../models/quiz.js";
-
-export const getAllQuizzes = async (req, res) => {
-    try {
-        const quizData = await QuizModel.find();
-        res.json({
-            success: true,
-            data: quizData
-        });
-    } catch (error) {
-        console.error("Error fetching quizzes:", error);
-        res.status(500).json({ 
-            success: false,
-            message: "Error fetching quizzes" 
-        });
-    }
-};
+import { generateRandomId } from "../utils/IdGenerator.js";
 
 export const getQuiz = async (req, res) => {
     try {
         const { quizid } = req.params;
-
+        
         const quiz = await QuizModel.findOne({ quizid });
         if (!quiz) {
             return res.status(404).json({
@@ -27,7 +12,7 @@ export const getQuiz = async (req, res) => {
                 message: "Quiz not found"
             });
         }
-
+        
         res.json({
             success: true,
             data: quiz
@@ -41,9 +26,27 @@ export const getQuiz = async (req, res) => {
     }
 };
 
+export const getAllQuizzes = async (req, res) => {
+    try {
+        const quizzes = await QuizModel.findOne({ creatorid: req.user.uid });
+        res.json({
+            success: true,
+            data: quizzes
+        });
+    } catch (error) {
+        console.error("Error fetching quizzes:", error);
+        res.status(500).json({ 
+            success: false,
+            message: "Error fetching quizzes" 
+        });
+    }
+};
+
 export const createQuiz = async (req, res) => {
     try {
         const newQuiz = new QuizModel(req.body);
+        newQuiz.creatorid = req.user.uid;
+        newQuiz.quizid = generateRandomId(8);
         const savedQuiz = await newQuiz.save();
 
         res.json({

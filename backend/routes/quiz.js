@@ -4,10 +4,9 @@ import { authToken } from "../middleware/authToken.js";
 
 const quizRoutes = express.Router();
 
-quizRoutes.get("/get/:quizid", getQuiz);
+quizRoutes.get("/get/:quizid", authToken, getQuiz);
+quizRoutes.get("/all", authToken, getAllQuizzes);
+quizRoutes.post("/create", authToken, createQuiz);
 
-quizRoutes.post("/create", createQuiz);
-
-quizRoutes.get("/all", getAllQuizzes);
 
 export default quizRoutes;
