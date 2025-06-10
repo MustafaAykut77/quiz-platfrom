@@ -61,3 +61,37 @@ export const createQuiz = async (req, res) => {
         });
     }
 };
+
+export const deleteQuiz = async (req, res) => {
+    try {
+        const { quizid } = req.params;
+        
+        const quiz = await QuizModel.findOne({ quizid });
+        if (!quiz) {
+            return res.status(404).json({
+                success: false,
+                message: "Quiz not found"
+            });
+        }
+        
+        if (quiz.uid !== req.user.uid) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to delete this quiz"
+            });
+        }
+        
+        await QuizModel.deleteOne({ quizid });
+        
+        res.json({
+            success: true,
+            message: "Quiz deleted successfully"
+        });
+    } catch (error) {
+        console.error("Error deleting quiz:", error);
+        res.status(500).json({ 
+            success: false,
+            message: "Error deleting quiz"
+        });
+    }
+};
