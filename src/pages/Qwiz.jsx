@@ -1,8 +1,8 @@
 import '../index.css';
 import "../config/firebase-config";
 import { useAuth } from '../contexts/authContext/page';
-import axios from "axios";
 import { useState, useEffect, useMemo } from "react";
+import { getUser } from "@/src/controllers/UserRequest"
 
 import {
   getCoreRowModel,
@@ -24,17 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const getData = async (token) => {
-  const response = await axios.get(`http://localhost:3000/protected`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-  });
-  console.log(response);
-};
-
 const Qwiz = () => {
-  const { currentUser } = useAuth();
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -204,17 +194,11 @@ const Qwiz = () => {
     }
   });
 
-  useEffect(() => {
-    if (currentUser?.accessToken) {
-      getData(currentUser.accessToken);
-    }
-  }, [currentUser]);
-
   return (
     <div className="container mx-auto py-10">
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2">
-          Merhaba {currentUser?.displayName || currentUser?.email}
+          Merhaba Çukulatam
         </h1>
         <p className="text-gray-600">Quiz'lerinizi görüntüleyin ve yönetin.</p>
       </div>

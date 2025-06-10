@@ -93,7 +93,7 @@ const Register = () => {
                         </button>
                         <div className="text-sm text-center text-[var(--secondary-text)]">
                             Zaten hesabın var mı? {'   '}
-                            <Link to={'/login'} className="text-center text-sm hover:underline font-bold">Giriş Yap</Link>
+                            <Link to={'/createProfile'} className="text-center text-sm hover:underline font-bold">Giriş Yap</Link>
                         </div>
                     </form>
                 </div>

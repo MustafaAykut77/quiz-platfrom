@@ -10,6 +10,7 @@ import Qwiz from './Qwiz';
 import CheckAuth from "../controllers/CheckAuth";
 import { AuthProvider } from "../contexts/authContext/page";
 import Layout from '@/src/Components/Layout';
+import CreateProfile from './register/CreateProfile';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Layout>
           <Routes>
             <Route path="/" element={<QuizCode />} />
+            <Route path="/createProfile" element={<CreateProfile />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
