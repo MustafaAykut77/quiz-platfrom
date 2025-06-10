@@ -1,21 +1,5 @@
 import UserModel from "../models/user.js";
 
-export const getAllUsers = async (req, res) => {
-	try {
-		const userData = await UserModel.find();
-		res.json({
-			success: true,
-			data: userData
-		});
-	} catch (error) {
-		console.error("Error fetching users:", error);
-		res.status(500).json({ 
-			success: false,
-			message: "Error fetching users" 
-		});
-	}
-};
-
 export const getUser = async (req, res) => {
 	try {
 		const user = await UserModel.findOne({ uid: req.user.uid });
