@@ -8,8 +8,8 @@ export const authToken = async (req, res, next) => {
 
 	const idToken = authHeader.split('Bearer ')[1];
 	try {
-		const decodedToken = await auth.verifyIdToken(idToken);
-		req.userID = decodedToken;
+		const decodedTokenUser = await auth.verifyIdToken(idToken);
+		req.user = decodedTokenUser;
 		next();
 	} catch (error) {
 		console.error('Error verifying token:', error);

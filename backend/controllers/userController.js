@@ -45,7 +45,7 @@ export const getUser = async (req, res) => {
 export const createUser = async (req, res) => {
 	try {
 		const newUser = new UserModel(req.body);
-		newUser.uid = req.userID;
+		newUser.uid = req.user.uid;
 		const savedUser = await newUser.save();
 		
 		res.status(201).json({
