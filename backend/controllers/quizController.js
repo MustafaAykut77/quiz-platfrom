@@ -62,6 +62,48 @@ export const createQuiz = async (req, res) => {
     }
 };
 
+export const updateQuiz = async (req, res) => {
+    try {
+        const { quizid } = req.params;
+        
+        const existingQuiz = await QuizModel.findOne({ 
+            quizid: quizid, 
+            creatorid: req.user.uid 
+        });
+        
+        if (!existingQuiz) {
+            return res.status(404).json({
+                success: false,
+                message: "Quiz bulunamadı veya yetkiniz yok"
+            });
+        }
+        
+        const updatedQuiz = await QuizModel.findOneAndUpdate(
+            { quizid: quizid, creatorid: req.user.uid },
+            { 
+                ...req.body,
+                creatorid: req.user.uid,
+                quizid: quizid
+            },
+            { 
+                new: true,
+            }
+        );
+
+        res.json({
+            success: true,
+            message: "Quiz başarıyla güncellendi",
+            data: updatedQuiz
+        });
+    } catch (error) {
+        console.error("Error updating quiz:", error);
+        res.status(500).json({ 
+            success: false,
+            message: "Quiz güncellenirken hata oluştu" 
+        });
+    }
+};
+
 export const deleteQuiz = async (req, res) => {
     try {
         const { quizid } = req.params;
