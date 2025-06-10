@@ -7,6 +7,4 @@ const userRoutes = express.Router();
 userRoutes.get("/get", authToken, getUser);
 userRoutes.post("/create", authToken, createUser);
 
-//userRoutes.get("/all", getAllUsers);
-
 export default userRoutes;
