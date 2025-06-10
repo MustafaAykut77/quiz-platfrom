@@ -11,6 +11,7 @@ import CheckAuth from "../controllers/CheckAuth";
 import { AuthProvider } from "../contexts/authContext/page";
 import Layout from '@/src/Components/Layout';
 import CreateProfile from './register/CreateProfile';
+import QuizCreator from './quiz/CreateQuiz';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<QuizCode />} />
             <Route path="/createProfile" element={<CreateProfile />} />
+            <Route path="/createQuiz" element={<QuizCreator />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

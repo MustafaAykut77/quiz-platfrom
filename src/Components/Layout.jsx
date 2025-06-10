@@ -40,6 +40,13 @@ const Layout = ({ children }) => {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
+                  <a href="/createQuiz">
+                    <span>Quiz Oluştur</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
                   <a href="/login">
                     <span>Giriş Yap</span>
                   </a>
