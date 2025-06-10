@@ -5,6 +5,8 @@ import { createQuiz, getQuiz, getAllQuizzes } from '@/src/controllers/QuizReques
 
 const QuizCreator = () => {
 
+  const { currentUser } = useAuth()
+
   const [quiz, setQuiz] = useState({
     quizName: '',
     quizCategory: '',
@@ -155,7 +157,8 @@ const QuizCreator = () => {
       };
       
       try {
-        const result = await createQuiz(quizData);
+        const token = currentUser?.stsTokenManager?.accessToken
+        const result = await createQuiz(token, quizData);
 
         if (result.success) {
           alert('Quiz başarıyla oluşturuldu!');

@@ -2,6 +2,7 @@ import '../index.css';
 import "../config/firebase-config";
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/src/contexts/authContext/page";
+import { useNavigate } from 'react-router-dom';
 
 import {
   getCoreRowModel,
@@ -22,9 +23,11 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+// Import getAllQuizzes function
+import { getAllQuizzes, updateQuiz, deleteQuiz } from '../controllers/QuizRequest';
 
 const Qwiz = () => {
-
+  const navigate = useNavigate();
   const { currentUser } = useAuth()
   const token = currentUser?.stsTokenManager?.accessToken
   console.log('Token:', token)
@@ -34,63 +37,58 @@ const Qwiz = () => {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [quizzes, setQuizzes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const mockQuizzes = [
-    {
-      id: "1",
-      title: "JavaScript Temelleri",
-      description: "JavaScript'in temel kavramlarını öğrenin",
-      category: "Programlama",
-      difficulty: "Kolay",
-      questionCount: 15,
-      createdAt: "2024-01-15",
-      status: "Aktif",
-      score: 85
-    },
-    {
-      id: "2",
-      title: "React Hooks",
-      description: "React Hooks kullanımı ve best practices",
-      category: "Programlama",
-      difficulty: "Orta",
-      questionCount: 20,
-      createdAt: "2024-01-20",
-      status: "Aktif",
-      score: 92
-    },
-    {
-      id: "3",
-      title: "TypeScript İleri Seviye",
-      description: "TypeScript'te generic'ler ve utility types",
-      category: "Programlama",
-      difficulty: "Zor",
-      questionCount: 25,
-      createdAt: "2024-01-25",
-      status: "Taslak"
-    },
-    {
-      id: "4",
-      title: "CSS Grid Layout",
-      description: "Modern CSS Grid sistemi",
-      category: "Tasarım",
-      difficulty: "Orta",
-      questionCount: 12,
-      createdAt: "2024-02-01",
-      status: "Aktif",
-      score: 78
-    },
-    {
-      id: "5",
-      title: "Node.js API Geliştirme",
-      description: "RESTful API tasarımı ve geliştirme",
-      category: "Backend",
-      difficulty: "Zor",
-      questionCount: 30,
-      createdAt: "2024-02-05",
-      status: "Arşivlenmiş",
-      score: 88
+  // Remove mockQuizzes array and add this useEffect
+  useEffect(() => {
+    const fetchQuizzes = async () => {
+      setIsLoading(true);
+      try {
+        const response = await getAllQuizzes(token);
+        if (response.success) {
+          // Transform the quiz data to match table structure
+          const formattedQuizzes = response.data.map(quiz => ({
+            id: quiz.quizid,
+            title: quiz.quizName,
+            category: quiz.category || 'Kategorisiz',
+            difficulty: quiz.difficulty || 'Belirtilmemiş',
+            questionCount: quiz.questions?.length || 0,
+            status: quiz.status || 'Aktif',
+            score: quiz.score,
+            createdAt: new Date(quiz.createdAt).toLocaleDateString('tr-TR') || '-'
+          }));
+          setQuizzes(formattedQuizzes);
+        }
+      } catch (error) {
+        console.error('Quizler yüklenirken hata oluştu:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchQuizzes();
     }
-  ];
+  }, [token]);
+
+  const handleEditQuiz = (quizId) => {
+    navigate(`/editQuiz/${quizId}`);
+  };
+
+  const handleDeleteQuiz = async (quizId) => {
+    if (window.confirm('Bu quiz\'i silmek istediğinizden emin misiniz?')) {
+      try {
+        const response = await deleteQuiz(token, quizId);
+        if (response.success) {
+          // Remove deleted quiz from state
+          const updatedQuizzes = quizzes.filter(quiz => quiz.id !== quizId);
+          setQuizzes(updatedQuizzes);
+        }
+      } catch (error) {
+        console.error('Quiz silinirken hata oluştu:', error);
+      }
+    }
+  };
 
   const columns = useMemo(() => [
     {
@@ -104,24 +102,6 @@ const Qwiz = () => {
       cell: ({ row }) => (
         <div className="text-sm text-gray-600">{row.getValue("category")}</div>
       )
-    },
-    {
-      accessorKey: "difficulty",
-      header: "Zorluk",
-      cell: ({ row }) => {
-        const difficulty = row.getValue("difficulty");
-        const colorClass = {
-          "Kolay": "bg-green-100 text-green-800",
-          "Orta": "bg-yellow-100 text-yellow-800",
-          "Zor": "bg-red-100 text-red-800"
-        }[difficulty] || "bg-gray-100 text-gray-800";
-
-        return (
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>
-            {difficulty}
-          </span>
-        );
-      }
     },
     {
       accessorKey: "questionCount",
@@ -149,18 +129,6 @@ const Qwiz = () => {
       }
     },
     {
-      accessorKey: "score",
-      header: "Puan",
-      cell: ({ row }) => {
-        const score = row.getValue("score");
-        return score ? (
-          <div className="text-center font-medium">{score}%</div>
-        ) : (
-          <div className="text-center text-gray-400">-</div>
-        );
-      }
-    },
-    {
       accessorKey: "createdAt",
       header: "Oluşturma Tarihi",
       cell: ({ row }) => (
@@ -172,15 +140,36 @@ const Qwiz = () => {
       header: "İşlemler",
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm">Düzenle</Button>
-          <Button variant="outline" size="sm">Görüntüle</Button>
+          <Button 
+            variant="success" 
+            size="sm" 
+            onClick={() => alert(`${row.original.title} quiz'i başlatılacak`)}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            Başlat
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => handleEditQuiz(row.original.id, row.original)}
+          >
+            Düzenle
+          </Button>
+          <Button 
+            variant="destructive" 
+            size="sm" 
+            onClick={() => handleDeleteQuiz(row.original.id)}
+          >
+            Sil
+          </Button>
         </div>
       )
     }
-  ], []);
+  ], [quizzes]); // Add quizzes as dependency
 
   const table = useReactTable({
-    data: mockQuizzes,
+    // Replace mockQuizzes with quizzes state
+    data: quizzes,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -197,6 +186,10 @@ const Qwiz = () => {
       rowSelection
     }
   });
+
+  const handleCreateQuiz = () => {
+    navigate('/createQuiz');
+  };
 
   return (
     <div className="container mx-auto">
@@ -216,7 +209,7 @@ const Qwiz = () => {
           }
           className="max-w-sm"
         />
-        <Button className="ml-auto">Yeni Quiz Oluştur</Button>
+        <Button className="ml-auto" onClick={handleCreateQuiz}>Yeni Quiz Oluştur</Button>
       </div>
 
       <div className="rounded-md border">
@@ -235,7 +228,13 @@ const Qwiz = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Quizler yükleniyor...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map(row => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map(cell => (
@@ -257,9 +256,6 @@ const Qwiz = () => {
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} / {table.getFilteredRowModel().rows.length} satır seçildi.
-        </div>
         <div className="space-x-2">
           <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
             Önceki

@@ -123,7 +123,7 @@ export const deleteQuiz = async (req, res) => {
             });
         }
         
-        if (quiz.uid !== req.user.uid) {
+        if (quiz.creatorid !== req.user.uid) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to delete this quiz"

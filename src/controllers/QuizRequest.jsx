@@ -1,11 +1,12 @@
 import axios from 'axios';
 
 // Quiz oluşturma fonksiyonu
-const createQuiz = async (quizData) => {
+const createQuiz = async (token, quizData) => {
   try {
     const response = await axios.post(`http://localhost:3000/api/quiz/create`, quizData, {
       headers: {
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       }
     });
 
@@ -16,7 +17,7 @@ const createQuiz = async (quizData) => {
   }
 };
 
-// Quiz alma fonksiyonu (düzeltilmiş)
+// Quiz alma fonksiyonu
 const getQuiz = async (quizid) => {
   try {
     const response = await axios.get(`http://localhost:3000/api/quiz/get/${quizid}`, {
@@ -33,11 +34,12 @@ const getQuiz = async (quizid) => {
 };
 
 // Tüm quizleri alma fonksiyonu
-const getAllQuizzes = async () => {
+const getAllQuizzes = async (token) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/quiz/getall`, {
+    const response = await axios.get(`http://localhost:3000/api/quiz/all`, {
       headers: {
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       }
     });
 
@@ -48,4 +50,38 @@ const getAllQuizzes = async () => {
   }
 };
 
-export { createQuiz, getQuiz, getAllQuizzes };
+// Quiz güncelleme fonksiyonu (yeni eklendi)
+const updateQuiz = async (token, quizid, quizData) => {
+  try {
+    const response = await axios.put(`http://localhost:3000/api/quiz/update/${quizid}`, quizData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating quiz:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Failed to update quiz');
+  }
+};
+
+// Quiz silme fonksiyonu (yeni eklendi)
+const deleteQuiz = async (token, quizid) => {
+  try {
+    const response = await axios.delete(`http://localhost:3000/api/quiz/delete/${quizid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting quiz:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Failed to delete quiz');
+  }
+};
+
+export { createQuiz, getQuiz, getAllQuizzes, updateQuiz, deleteQuiz };
