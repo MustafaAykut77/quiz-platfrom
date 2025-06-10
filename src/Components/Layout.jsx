@@ -57,7 +57,13 @@ const Layout = ({ children }) => {
         </Sidebar>
         
         <div className="flex-1 flex flex-col">   
+          <div className="flex items-center">
+            <div className="md:hidden p-2">
+              <SidebarTrigger />
+            </div>
             <Header />
+          </div>
+          
           <main className="flex-1 overflow-auto">
             {children}
           </main>

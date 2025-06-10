@@ -4,6 +4,7 @@ import "../config/firebase-config";
 
 import Login from './login/Login';
 import Register from './register/Register';
+import QuizCode from './quiz/QuizCode';
 import Quiz from './quiz/Quiz';
 import Qwiz from './Qwiz';
 import CheckAuth from "../controllers/CheckAuth";
@@ -16,7 +17,8 @@ const App = () => {
       <BrowserRouter>
         <Layout>
           <Routes>
-            <Route path="/" element={<Quiz />} />
+            <Route path="/" element={<QuizCode />} />
+            <Route path="/quiz" element={<Quiz />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/home" element={

@@ -218,7 +218,7 @@ function SidebarTrigger({
   onClick,
   ...props
 }) {
-  const { toggleSidebar, open } = useSidebar() // open state'ini de alın
+  const { toggleSidebar, open } = useSidebar()
   
   return (
     <Button
