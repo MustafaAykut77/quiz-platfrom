@@ -65,11 +65,22 @@ const Quiz = () => {
         return () => clearInterval(interval);
     }, [timer, showResult, showFeedback]);
 
+    // Ses çalma fonksiyonu
+    const playSound = (isCorrect) => {
+        const audio = new Audio(isCorrect ? '/correct.mp3' : '/wrong.mp3');
+        audio.play().catch(error => {
+            console.log("Ses çalma hatası:", error);
+        });
+    };
+
     const handleAnswerClick = (selectedIndex) => {
         setSelectedAnswer(selectedIndex);
         setShowFeedback(true);
         
         const isCorrect = selectedIndex === questions[currentQuestionIndex].correctAnswer;
+        
+        // Doğru/yanlış sesini çal
+        playSound(isCorrect);
         
         if (isCorrect) {
             setScore(score + 1);
