@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 
 const Quiz = () => {
+    const backgroundMusic = useRef(new Audio('/background-music.mp3'));
+
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [showResult, setShowResult] = useState(false);
     const [timer, setTimer] = useState(30);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [showFeedback, setShowFeedback] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
 
     // Örnek quiz soruları
     const questions = [
@@ -52,6 +55,30 @@ const Quiz = () => {
             correctAnswer: 2
         }
     ];
+
+    useEffect(() => {
+        // Müziği döngüye al
+        backgroundMusic.current.loop = true;
+        
+        // Quiz başladığında müziği çal
+        if (!showResult) {
+            backgroundMusic.current.play().catch(error => {
+                console.log("Müzik çalma hatası:", error);
+            });
+        }
+
+        // Quiz bittiğinde müziği durdur
+        if (showResult) {
+            backgroundMusic.current.pause();
+            backgroundMusic.current.currentTime = 0;
+        }
+
+        // Component unmount olduğunda müziği temizle
+        return () => {
+            backgroundMusic.current.pause();
+            backgroundMusic.current.currentTime = 0;
+        };
+    }, [showResult]);
 
     useEffect(() => {
         let interval = null;
@@ -109,6 +136,21 @@ const Quiz = () => {
         setTimer(30);
         setSelectedAnswer(null);
         setShowFeedback(false);
+    };
+
+    useEffect(() => {
+        // Arkaplan müziğinin sesini ayarla (0.0 ile 1.0 arası)
+        backgroundMusic.current.volume = 0.3;
+    }, []);
+
+    // Ses kontrolü için bir toggle fonksiyonu
+    const toggleMusic = () => {
+        if (isMuted) {
+            backgroundMusic.current.play();
+        } else {
+            backgroundMusic.current.pause();
+        }
+        setIsMuted(!isMuted);
     };
 
     if (showResult) {
@@ -243,6 +285,16 @@ const Quiz = () => {
                         </div>
                     </div>
                 )}
+
+                {/* Ses Kontrol Butonu */}
+                <div className="absolute top-30 right-30">
+                    <button 
+                        onClick={toggleMusic}
+                        className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+                    >
+                        {isMuted ? "🔇" : "🔊"}
+                    </button>
+                </div>
             </div>
         </main>
     );
