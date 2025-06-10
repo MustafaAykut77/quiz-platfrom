@@ -28,7 +28,14 @@ export const getQuiz = async (req, res) => {
 
 export const getAllQuizzes = async (req, res) => {
     try {
-        const quizzes = await QuizModel.findOne({ creatorid: req.user.uid });
+        const quizzes = await QuizModel.find(
+            { creatorid: req.user.uid },
+            {
+                quizid: 1,
+                quizName: 1,
+                _id: 0
+            }
+        );
         res.json({
             success: true,
             data: quizzes
