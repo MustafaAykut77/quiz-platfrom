@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema({
 		maxlength: 50
 	},
 	img: {
-		type: String
+		type: Number,
+		required: true
 	}
 }, { timestamps: true });
 

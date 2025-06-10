@@ -18,7 +18,7 @@ export const getAllUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
 	try {
-		const { uid } = req.userID;
+		const { uid } = req.user.uid;
 		console.log(uid);
 
 		const user = await UserModel.findOne({ uid });
