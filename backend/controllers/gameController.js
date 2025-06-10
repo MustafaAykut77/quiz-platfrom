@@ -8,10 +8,10 @@ export const getAllGames = async (req, res) => {
             data: gameData
         });
     } catch (error) {
-        console.error("Error fetching Gamezes:", error);
+        console.error("Error fetching Games:", error);
         res.status(500).json({ 
             success: false,
-            message: "Error fetching Gamezes" 
+            message: "Error fetching Games" 
         });
     }
 };
