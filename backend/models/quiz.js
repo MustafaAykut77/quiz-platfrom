@@ -24,10 +24,6 @@ const quizSchema = new mongoose.Schema({
         minlength: 2,
         maxlength: 50
     },
-    isPrivate: {
-        type: Boolean,
-        default: false
-    },
     questions: [{
         question: {
             type: String,
