@@ -65,7 +65,9 @@ export const createQuiz = async (req, res) => {
     try {
         const newQuiz = new QuizModel(req.body);
         newQuiz.creatorid = req.user.uid;
-        newQuiz.quizid = generateRandomId(8);
+        do {
+            newQuiz.quizid = generateRandomId(8);
+        } while(await QuizModel.findOne({ quizid: newQuiz.quizid }));
         const savedQuiz = await newQuiz.save();
 
         res.json({
