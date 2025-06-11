@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getQuiz } from '@/src/controllers/QuizRequest';
+import io from 'socket.io-client';
+
+const socket = io(import.meta.env.VITE_SERVER_URL, {
+  autoConnect: false
+});
 
 const Quiz = () => {
     const { quizId } = useParams();
