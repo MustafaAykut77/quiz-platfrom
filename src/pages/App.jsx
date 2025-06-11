@@ -29,7 +29,7 @@ const App = () => {
                 <CreateProfile />
               </CheckAuthFirebase>
               } />
-            <Route path="/createQuiz" element={
+            <Route path="/createquiz" element={
               <CheckAuthFirebase>
                 <CheckAuth>
                   <QuizCreator />

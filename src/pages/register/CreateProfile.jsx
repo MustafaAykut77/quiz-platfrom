@@ -59,23 +59,6 @@ const ProfileSetup = () => {
         }
     ]
 
-    useEffect(() => {
-        const checkUser = async () => {
-            try {
-                const user = await getUser(currentUser?.stsTokenManager?.accessToken)
-                if(user.data.success) {
-                    navigate('/home')
-                }
-            } catch (error) {
-                console.error('Kullanıcı kontrol hatası:', error)
-            }
-        }
-
-        if (userLoggedIn) {
-            checkUser()
-        }
-    }, [userLoggedIn, currentUser, navigate])
-
     const handlePredefinedPhotoSelect = (photo) => {
         setSelectedPredefinedPhoto(photo.id)
         setImagePreview(photo.url)
@@ -112,6 +95,7 @@ const ProfileSetup = () => {
 
                 // createUser fonksiyonuna profil fotoğrafı URL'sini de gönder
                 await createUser(token, username, profilePhoto)
+                
                 navigate('/home')
                 
             } catch (error) {

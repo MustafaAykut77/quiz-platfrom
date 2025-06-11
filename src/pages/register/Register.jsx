@@ -25,7 +25,7 @@ const Register = () => {
 
     return (
         <>
-            {userLoggedIn && (<Navigate to={'/createprofile'} replace={true} />)}
+            {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
 
             <main className="w-full h-full flex self-center place-content-center place-items-center">
                 <div className="w-96 space-y-5 p-4 shadow-xl border-2 border-[var(--border)] rounded-2xl ">

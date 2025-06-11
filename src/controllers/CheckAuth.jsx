@@ -15,26 +15,41 @@ const CheckAuthFirebase = ({ children }) => {
 
 const CheckAuth = ({ children }) => {
     const [hasMongoUser, setHasMongoUser] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { currentUser } = useAuth();
 
     useEffect(() => {
         const checkMongoUser = async () => {
+            if (!currentUser) {
+                setLoading(false);
+                return;
+            }
+
             try {
                 const response = await getUser(currentUser?.stsTokenManager?.accessToken);
-                setHasMongoUser(!!response);
+                console.log("MongoDB user check response:", response);
+                if (response?.data?.success) {
+                    setHasMongoUser(true);
+                } else {
+                    setHasMongoUser(false);
+                }
             } catch (error) {
                 console.error("MongoDB user check failed:", error);
                 setHasMongoUser(false);
+            } finally {
+                setLoading(false);
             }
         };
 
-        if (currentUser?.stsTokenManager?.accessToken) {
-            checkMongoUser();
-        }
+        checkMongoUser();
     }, [currentUser]);
 
-    if (!hasMongoUser) {
-        return <Navigate to="/createprofile" /> // Kullanıcı profili yoksa profil oluşturma sayfasına yönlendir
+    if (loading) {
+        return <div>Yükleniyor...</div>;
+    }
+
+    if (!hasMongoUser && currentUser) {
+        return <Navigate to="/createprofile" />;
     }
 
     return children;

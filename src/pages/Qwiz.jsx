@@ -3,6 +3,7 @@ import "../config/firebase-config";
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/src/contexts/authContext/page";
 import { useNavigate } from 'react-router-dom';
+import { getUser } from "@/src/controllers/UserRequest";
 
 import {
   getCoreRowModel,
@@ -20,16 +21,16 @@ import { createGame } from '../controllers/GameRequest';
 
 const Qwiz = () => {
   const navigate = useNavigate();
-  const { currentUser } = useAuth()
-  const token = currentUser?.stsTokenManager?.accessToken
-  console.log('Token:', token)
-
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [quizzes, setQuizzes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userName, setUserName] = useState('Kullanıcı');
+  const { currentUser } = useAuth();
+  const token = currentUser?.stsTokenManager?.accessToken
+  // console.log('Token:', token)
 
   // Remove mockQuizzes array and add this useEffect
   useEffect(() => {
@@ -58,6 +59,24 @@ const Qwiz = () => {
 
     if (token) {
       fetchQuizzes();
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const response = await getUser(token);
+        if (response.data.success) {
+          setUserName(response.data.data.username || 'Kullanıcı');
+        }
+      } catch (error) {
+        console.error('Kullanıcı bilgisi yüklenirken hata:', error);
+        setUserName('Kullanıcı');
+      }
+    };
+
+    if (token) {
+      fetchUserName();
     }
   }, [token]);
 
@@ -235,7 +254,7 @@ const Qwiz = () => {
   });
 
   const handleCreateQuiz = () => {
-    navigate('/createQuiz');
+    navigate('/createquiz');
   };
 
   if (isLoading) {
@@ -294,7 +313,7 @@ const Qwiz = () => {
             color: 'var(--secondary-text)',
             marginBottom: '0.5rem'
           }}>
-            Merhaba, {currentUser?.displayName || 'Kullanıcı'}!
+            Merhaba, {userName}!
           </h1>
           <p style={{
             color: 'var(--text)',
