@@ -33,7 +33,6 @@ const Register = () => {
                         <div className="mt-2">
                             <h3 className="text-[var(--secondary-text)] text-xl font-semibold sm:text-2xl">Yeni Hesap Oluştur</h3>
                         </div>
-
                     </div>
                     <form
                         onSubmit={onSubmit}

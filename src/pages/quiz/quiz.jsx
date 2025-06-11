@@ -154,7 +154,7 @@ const Quiz = () => {
         return (
             <main style={{
                 width: '100%',
-                height: '100vh',
+                height: 'calc(100vh - 3.5rem)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -185,7 +185,7 @@ const Quiz = () => {
         return (
             <main style={{
                 width: '100%',
-                height: '100vh',
+                height: 'calc(100vh - 3.5rem)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

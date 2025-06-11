@@ -30,7 +30,7 @@ const Login = () => {
     }
 
     return (
-        <div>
+        <>
             {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
 
             <main className="w-full h-full flex self-center place-content-center place-items-center">
@@ -108,7 +108,7 @@ const Login = () => {
                     </button>
                 </div>
             </main>
-        </div>
+        </>
     )
 }
 

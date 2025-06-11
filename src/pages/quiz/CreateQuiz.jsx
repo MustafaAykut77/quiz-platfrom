@@ -183,7 +183,7 @@ const QuizCreator = () => {
 
   return (
     <div style={{ 
-      minHeight: '100vh', 
+      minheight: 'calc(100vh - 3.5rem)', 
       backgroundColor: 'var(--background)',
       color: 'var(--secondary-text)',
       fontFamily: 'cursive'
