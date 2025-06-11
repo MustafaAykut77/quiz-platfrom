@@ -5,8 +5,7 @@ import { authToken } from "../middleware/authToken.js";
 const gameRoutes = express.Router();
 
 gameRoutes.get("/get/:code", getGame);
-gameRoutes.post("/create", createGame);
-
-gameRoutes.get("/all", getAllGames);
+gameRoutes.post("/create", authToken, createGame);
+gameRoutes.get("/all", authToken, getAllGames);
 
 export default gameRoutes;

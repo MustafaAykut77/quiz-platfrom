@@ -33,12 +33,24 @@ export const getAllQuizzes = async (req, res) => {
             {
                 quizid: 1,
                 quizName: 1,
+                quizCategory: 1,
+                createdAt: 1,
+                questions: 1,
                 _id: 0
             }
         );
+        
+        const quizzesWithCount = quizzes.map(quiz => ({
+            quizid: quiz.quizid,
+            quizName: quiz.quizName,
+            quizCategory: quiz.quizCategory,
+            createdAt: quiz.createdAt,
+            questionCount: quiz.questions ? quiz.questions.length : 0
+        }));
+        
         res.json({
             success: true,
-            data: quizzes
+            data: quizzesWithCount
         });
     } catch (error) {
         console.error("Error fetching quizzes:", error);
