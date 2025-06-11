@@ -7,7 +7,7 @@ import Register from './register/Register';
 import QuizCode from './quiz/QuizCode';
 import Quiz from './quiz/Quiz';
 import Qwiz from './Qwiz';
-import CheckAuth from "../controllers/CheckAuth";
+import { CheckAuthFirebase, CheckAuth } from "../controllers/CheckAuth";
 import { AuthProvider } from "../contexts/authContext/page";
 import Layout from '@/src/Components/Layout';
 import CreateProfile from './register/CreateProfile';
@@ -21,16 +21,34 @@ const App = () => {
         <Layout>
           <Routes>
             <Route path="/" element={<QuizCode />} />
-            <Route path="/createProfile" element={<CreateProfile />} />
-            <Route path="/createQuiz" element={<QuizCreator />} />
-            <Route path="/quiz/:quizId" element={<QuizEditor />} />
-            <Route path="/game/:quizId" element={<Quiz />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<Register />} />  
+            <Route path="/game/:quizId" element={<Quiz />} />
+            <Route path="/createprofile" element={
+              <CheckAuthFirebase>
+                <CreateProfile />
+              </CheckAuthFirebase>
+              } />
+            <Route path="/createQuiz" element={
+              <CheckAuthFirebase>
+                <CheckAuth>
+                  <QuizCreator />
+                </CheckAuth>
+              </CheckAuthFirebase>
+            } />
+            <Route path="/quiz/:quizId" element={
+              <CheckAuthFirebase>
+                <CheckAuth>
+                  <QuizEditor />
+                </CheckAuth>
+              </CheckAuthFirebase>
+            } />
             <Route path="/home" element={
-              <CheckAuth>
-                <Qwiz />
-              </CheckAuth>
+              <CheckAuthFirebase>
+                <CheckAuth>
+                  <Qwiz />
+                </CheckAuth>
+              </CheckAuthFirebase>
             } />
           </Routes>
         </Layout>

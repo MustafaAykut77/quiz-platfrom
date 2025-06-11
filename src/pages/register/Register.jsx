@@ -25,7 +25,7 @@ const Register = () => {
 
     return (
         <>
-            {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && (<Navigate to={'/createprofile'} replace={true} />)}
 
             <main className="w-full h-full flex self-center place-content-center place-items-center">
                 <div className="w-96 space-y-5 p-4 shadow-xl border-2 border-[var(--border)] rounded-2xl ">
@@ -92,7 +92,7 @@ const Register = () => {
                         </button>
                         <div className="text-sm text-center text-[var(--secondary-text)]">
                             Zaten hesabın var mı? {'   '}
-                            <Link to={'/createProfile'} className="text-center text-sm hover:underline font-bold">Giriş Yap</Link>
+                            <Link to={'/login'} className="text-center text-sm hover:underline font-bold">Giriş Yap</Link>
                         </div>
                     </form>
                 </div>
