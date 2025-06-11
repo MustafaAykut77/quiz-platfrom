@@ -1,26 +1,19 @@
 import GameModel from "../models/game.js";
-
-export const getAllGames = async (req, res) => {
-    try {
-        const gameData = await GameModel.find();
-        res.json({
-            success: true,
-            data: gameData
-        });
-    } catch (error) {
-        console.error("Error fetching Games:", error);
-        res.status(500).json({ 
-            success: false,
-            message: "Error fetching Games" 
-        });
-    }
-};
+import { generateRandomId } from "../utils/IdGenerator.js";
 
 export const getGame = async (req, res) => {
     try {
         const { code } = req.params;
 
-        const game = await GameModel.findOne({ code });
+        const game = await GameModel.findOne(
+            { code },
+            {
+                code: 1,
+                creatorid: 1,
+                quizid: 1,
+                _id: 0
+            }
+        );
         if (!game) {
             return res.status(404).json({
                 success: false,
@@ -44,6 +37,29 @@ export const getGame = async (req, res) => {
 export const createGame = async (req, res) => {
     try {
         const newGame = new GameModel(req.body);
+
+        newGame.creatorid = req.user.uid;
+
+        do {
+            newGame.code = generateRandomId(8);
+        } while(await GameModel.findOne({ code: newGame.code }));
+
+        const existingQuiz = await QuizModel.findOne({ quizid: newGame.quizid });
+        if (!existingQuiz) {
+            return res.status(404).json({
+                success: false,
+                message: "Quiz not found"
+            });
+        }
+
+        const userQuiz = await QuizModel.findOne({ creatorid: newGame.creatorid });
+        if (userQuiz) {
+            return res.status(409).json({
+                success: false,
+                message: "You already have an active game. Only one game per user is allowed."
+            });
+        }
+
         const savedGame = await newGame.save();
 
         res.json({

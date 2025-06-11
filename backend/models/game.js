@@ -6,14 +6,25 @@ const gameSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    creatorid: {
+        type: String,
+        required: true
+    },
     quizid: {
         type: String,
         required: true
     },
-    creatorid: {
-        type: String,
-        required: true
-    }
+    players: [{
+        playerName: {
+            type: String,
+            required: true
+        },
+        playerScore: {
+            type: Number,
+            required: true,
+            default: 0
+        }
+    }]
 }, { timestamps: true });
 
 const GameModel = mongoose.model("Game", gameSchema);
