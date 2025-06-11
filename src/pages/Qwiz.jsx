@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // Import getAllQuizzes function
 import { getAllQuizzes, updateQuiz, deleteQuiz } from '../controllers/QuizRequest';
+import { createGame } from '../controllers/GameRequest';
 
 const Qwiz = () => {
   const navigate = useNavigate();
@@ -79,6 +80,24 @@ const Qwiz = () => {
     }
   };
 
+  const handleCreateGame = async (quizId) => {
+    try {
+      console.log('Creating game for quiz ID:', quizId);
+
+      const response = await createGame(token, quizId );
+      if (response.success) {
+        // Navigate to the game page with the new game ID
+        navigate(`/game/${response.data.gameId}`);
+      } else {
+        console.error('Oyun oluşturulurken hata:', response.message);
+        alert('Oyun oluşturulurken bir hata oluştu.');
+      }
+    } catch (error) {
+      console.error('Oyun oluşturulurken hata:', error);
+      alert('Oyun oluşturulurken bir hata oluştu.');
+    }
+  };
+
   const columns = useMemo(() => [
     {
       accessorKey: "id",
@@ -119,28 +138,28 @@ const Qwiz = () => {
       cell: ({ row }) => (
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <button
-            onClick={() => alert(`${row.original.title} quiz'i başlatılacak`)}
+            onClick={() => handleCreateGame(row.original.id)}
             style={{
               padding: '0.5rem 1rem',
               fontSize: '0.75rem',
               fontWeight: '500',
               borderRadius: '0.375rem',
-              border: '2px solid #10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              color: '#10b981',
+              border: '2px solid #6366f1',
+              backgroundColor: 'rgba(99, 102, 241, 0.1)',
+              color: '#6366f1',
               cursor: 'pointer',
               transition: 'all 0.2s'
             }}
             onMouseOver={(e) => {
-              e.target.style.backgroundColor = '#10b981';
+              e.target.style.backgroundColor = '#6366f1';
               e.target.style.color = 'white';
             }}
             onMouseOut={(e) => {
-              e.target.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-              e.target.style.color = '#10b981';
+              e.target.style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+              e.target.style.color = '#6366f1';
             }}
           >
-            Başlat
+            Oyun Oluştur
           </button>
           <button
             onClick={() => handleEditQuiz(row.original.id, row.original)}
@@ -275,7 +294,7 @@ const Qwiz = () => {
             color: 'var(--secondary-text)',
             marginBottom: '0.5rem'
           }}>
-            Merhaba Çukulatam
+            Merhaba, {currentUser?.displayName || 'Kullanıcı'}!
           </h1>
           <p style={{
             color: 'var(--text)',

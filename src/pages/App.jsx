@@ -12,6 +12,7 @@ import { AuthProvider } from "../contexts/authContext/page";
 import Layout from '@/src/Components/Layout';
 import CreateProfile from './register/CreateProfile';
 import QuizCreator from './quiz/CreateQuiz';
+import QuizEditor from './quiz/UpdateQuiz';
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
             <Route path="/" element={<QuizCode />} />
             <Route path="/createProfile" element={<CreateProfile />} />
             <Route path="/createQuiz" element={<QuizCreator />} />
+            <Route path="/quiz/:quizId" element={<QuizEditor />} />
             <Route path="/game/:quizId" element={<Quiz />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

@@ -1,4 +1,5 @@
 import GameModel from "../models/game.js";
+import QuizModel from "../models/quiz.js";
 import { generateRandomId } from "../utils/IdGenerator.js";
 
 export const getGame = async (req, res) => {
@@ -52,7 +53,7 @@ export const createGame = async (req, res) => {
             });
         }
 
-        const userQuiz = await QuizModel.findOne({ creatorid: newGame.creatorid });
+        const userQuiz = await GameModel.findOne({ creatorid: newGame.creatorid });
         if (userQuiz) {
             return res.status(409).json({
                 success: false,
