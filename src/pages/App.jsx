@@ -6,6 +6,7 @@ import Login from './login/Login';
 import Register from './register/Register';
 import QuizCode from './quiz/QuizCode';
 import Quiz from './quiz/Quiz';
+import Panel from './quiz/Panel';
 import Qwiz from './Qwiz';
 import { CheckAuthFirebase, CheckAuth } from "../controllers/CheckAuth";
 import { AuthProvider } from "../contexts/authContext/page";
@@ -47,6 +48,13 @@ const App = () => {
               <CheckAuthFirebase>
                 <CheckAuth>
                   <Qwiz />
+                </CheckAuth>
+              </CheckAuthFirebase>
+            } />
+            <Route path="/panel" element={
+              <CheckAuthFirebase>
+                <CheckAuth>
+                  <Panel />
                 </CheckAuth>
               </CheckAuthFirebase>
             } />
