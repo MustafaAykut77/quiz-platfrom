@@ -29,6 +29,8 @@ const io = new Server(server, {
 	}
 });
 
+app.set('io', io);
+
 // Socekt'ların kurulması
 setupConnectionSocket(io);
 
