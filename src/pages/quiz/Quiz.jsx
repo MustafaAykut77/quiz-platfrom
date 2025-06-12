@@ -26,7 +26,7 @@ const Quiz = () => {
     const [showFeedback, setShowFeedback] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const [quizData, setQuizData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     // API isteği ile code kontrolü
@@ -47,6 +47,8 @@ const Quiz = () => {
 
     // Socket bağlantısı ve setUsername işlemi
     useEffect(() => {
+        if (!isGameExists) return;
+
         socket.connect();
         socket.on('connect', () => {
             console.log('Socket bağlantısı başarılı:', socket.id);
@@ -75,7 +77,7 @@ const Quiz = () => {
         socket.on('username_set', (name) => {
             console.log('Kullanıcı adı ayarlandı:', name);
             // Bekleme ekranı gelecek burada bi süre bekleyebilir.
-            setGameStarted(true);
+            setIsGameWaiting(true);
             socket.off('username_set');
         });
 
@@ -86,7 +88,7 @@ const Quiz = () => {
 
     // Kullanıcı oyuna girdiğinde socket üzerinden bildirim gönderme
     useEffect(() => {
-        if (!gameStarted) return;
+        if (!isGameWaiting) return;
 
         socket.on('user_entered', (username) => {
             console.log(`${username} oyuna girdi.`);
