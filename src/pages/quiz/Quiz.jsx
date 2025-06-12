@@ -84,16 +84,15 @@ const Quiz = () => {
 
         socket.on('start_game', () => {
             console.log('Oyun başlatılıyor...');
-            // Oyun başladığında gerekli işlemleri yapabilirsiniz
             setIsGameStarted(true);
+            socket.off('user_entered');
+            socket.off('start_game');
         });
-
+        return () => {
+            socket.off('user_entered');
+            socket.off('start_game');
+        };
     }, [isGameWaiting]);
-
-
-
-
-
 
     // Oyun başladığında gerekli işlemleri yapma
     useEffect(() => {
