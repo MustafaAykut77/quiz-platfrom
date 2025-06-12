@@ -347,6 +347,10 @@ const Quiz = () => {
         );
     }
 
+    if (isGameExists) {
+        // erenin socketten göndereceği players verisini sergile
+    }
+
     // 3. Quiz verisi yoksa veya hata varsa hata göster
     if (error || !quizData) {
         return (
