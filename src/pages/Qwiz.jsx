@@ -102,19 +102,17 @@ const Qwiz = () => {
   const handleCreateGame = async (quizId) => {
     try {
       console.log('Creating game for quiz ID:', quizId);
-
       const response = await createGame(token, quizId );
-      if (response.success) {
-        // Navigate to the game page with the new game ID
-        navigate(`/game/${response.data.gameId}`);
-      } else {
+      if (!response.success) {
         console.error('Oyun oluşturulurken hata:', response.message);
         alert('Oyun oluşturulurken bir hata oluştu.');
       }
+      
     } catch (error) {
       console.error('Oyun oluşturulurken hata:', error);
       alert('Oyun oluşturulurken bir hata oluştu.');
     }
+    navigate(`/panel`);
   };
 
   const columns = useMemo(() => [
