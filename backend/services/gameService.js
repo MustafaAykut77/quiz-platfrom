@@ -3,48 +3,76 @@ import { generateRandomId } from "../utils/IdGenerator.js";
 
 export const addPlayer = async (code, name) => {
     try {
-        const existingQuiz = await GameModel.findOne({ code });
+        const existingGame = await GameModel.findOne({ code });
         
-        if (!existingQuiz) return;
+        if (!existingGame) {
+            return {
+                success: false,
+                error: "Game not found"
+            };
+        }
+
+        if (existingGame.players.some(player => player.playerName === name)) {
+            return {
+                success: false,
+                error: "Player name already exists"
+            };
+        }
         
-        existingQuiz.players.push({
-            playerid: generateRandomId(10),
-            name: name,
-            score: 0
+        existingGame.players.push({
+            playerName: name,
+            playerScore: 0
         });
 
-        const updatedQuiz = await GameModel.findOneAndUpdate(
+        const updatedGame = await GameModel.findOneAndUpdate(
             { code },
-            { players: existingQuiz.players },
+            { players: existingGame.players },
             { new: true }
         );
 
-        return updatedQuiz;
+        return {
+            success: true,
+            data: updatedGame
+        };
     } catch (error) {
-        return null;
+        return {
+            success: false,
+            error: error.message
+        };
     }
 };
 
 export const updatePlayer = async (code, name, score) => {
     try {
-        const existingQuiz = await GameModel.findOne({ code });
+        const existingGame = await GameModel.findOne({ code });
         
-        if (!existingQuiz) return;
+        if (!existingGame) {
+            return {
+                success: false,
+                error: "Game not found"
+            };
+        }
         
-        existingQuiz.players.array.forEach(player => {
-            if (player.name === name) {
-                player.score = score;
+        existingGame.players.forEach(player => {
+            if (player.playerName === name) {
+                player.playerScore = score;
             }
         });
 
-        const updatedQuiz = await GameModel.findOneAndUpdate(
+        const updatedGame = await GameModel.findOneAndUpdate(
             { code },
-            { players: existingQuiz.players },
+            { players: existingGame.players },
             { new: true }
         );
 
-        return updatedQuiz;
+        return {
+            success: true,
+            data: updatedGame
+        };
     } catch (error) {
-        return null;
+        return {
+            success: false,
+            error: error.message
+        };
     }
 };
