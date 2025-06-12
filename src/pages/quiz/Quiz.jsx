@@ -18,6 +18,7 @@ const Quiz = () => {
     const [isGameWaiting, setIsGameWaiting] = useState(false);
     const [isGameStarted, setIsGameStarted] = useState(false);
 
+    const [playerList, setPlayerList] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [showResult, setShowResult] = useState(false);
@@ -46,43 +47,30 @@ const Quiz = () => {
         setIsGameExists(true);
     }, []);
 
-    // Socket bağlantısı ve setUsername işlemi
     useEffect(() => {
-        if (!isGameExists) return;
+        console.log('Player listesi güncellendi:', playerList);
+    }, [playerList]);
+    
+    // Socket bağlantısı ve join_game işlemi
+    useEffect(() => {
+        if (!isGameExists && !username) return;
 
         socket.connect();
-        socket.on('connect', () => {
-            console.log('Socket bağlantısı başarılı:', socket.id);
-            socket.emit('join_game', code);
-        });
+        socket.emit('join_game', code, username);
 
-        socket.on('user_joined', () => {
-            console.log('Kullanıcı katıldı.');
-            // Artık burada otomatik setUsername yok!
-            socket.off('user_joined');
+        socket.on('join_return', (data) => {
+            console.log('Oyun katılım durumu:', data);
+            if (data.success) {
+                setIsGameWaiting(true);
+                setPlayerList(data.players.data);
+                console.log(`${data.username} oyuna katıldı.`);
+                socket.off('join_return');
+            }
         });
 
         return () => {
-            socket.off('connect');
-            socket.off('user_joined');
+            socket.off('join_return');
             socket.disconnect();
-        };
-    }, [isGameExists]);
-
-    // Socket üzerinden kullanıcı adını belirleme
-    useEffect(() => {
-        if (!username) return;
-        socket.emit('set_username', username);
-
-        socket.on('username_set', (name) => {
-            console.log('Kullanıcı adı ayarlandı:', name);
-            // Bekleme ekranı gelecek burada bi süre bekleyebilir.
-            setIsGameWaiting(true);
-            socket.off('username_set');
-        });
-
-        return () => {
-            socket.off('username_set');
         };
     }, [username]);
 
@@ -90,9 +78,8 @@ const Quiz = () => {
     useEffect(() => {
         if (!isGameWaiting) return;
 
-        socket.on('user_entered', (username) => {
-            console.log(`${username} oyuna girdi.`);
-            // Burada kullanıcı arayüzüne bildirim ekleyebilirsiniz
+        socket.on('user_entered', (user) => {
+            setPlayerList(prevPlayers => [...prevPlayers, user]);
         });
 
         socket.on('start_game', () => {
@@ -102,6 +89,11 @@ const Quiz = () => {
         });
 
     }, [isGameWaiting]);
+
+
+
+
+
 
     // Oyun başladığında gerekli işlemleri yapma
     useEffect(() => {
