@@ -16,7 +16,7 @@ mongoose.connect(MONGOURL).then(() => {
 }).catch((error) => console.log(error));
 
 // Express.JS serverinin açılması
-app.use(cors());s
+app.use(cors());
 const server = app.listen(PORT, () => {
   	console.log(`Server listening on port ${PORT}`);
 });
