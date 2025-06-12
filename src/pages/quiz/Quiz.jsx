@@ -306,6 +306,125 @@ const Quiz = () => {
             </main>
         );
     }
+    else {
+        return (
+            <main style={{
+                minWidth: '1200px', // 900px'den 1200px'e çıkarıldı
+                width: '90%', // Ekran genişliğinin %90'ını kapsayacak
+                maxWidth: '1600px', // Maksimum genişlik sınırı
+                height: 'calc(100vh - 3.5rem)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'var(--background)',
+                fontFamily: 'cursive',
+                padding: '2rem',
+                margin: '0 auto' // Ortalamak için
+            }}>
+                <div style={{
+                    width: '100%',
+                    maxWidth: '32rem',
+                    padding: '2rem',
+                    backgroundColor: 'var(--secondary-bg)',
+                    borderRadius: '1rem',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    border: '2px solid var(--border)'
+                }}>
+                    <h2 style={{
+                        color: 'var(--secondary-text)',
+                        fontSize: '1.5rem',
+                        marginBottom: '0.5rem',
+                        textAlign: 'center'
+                    }}>
+                        Oyuncular Bekleniyor...
+                    </h2>
+                    <p style={{
+                        color: 'var(--text)',
+                        fontSize: '0.875rem',
+                        marginBottom: '2rem',
+                        textAlign: 'center'
+                    }}>
+                        Oyun Kodu: <strong>{code}</strong>
+                    </p>
+                    
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(4, 1fr)',
+                        gap: '1rem',
+                        maxHeight: '400px',
+                        overflowY: 'auto',
+                        padding: '0.5rem'
+                    }}>
+                        {[...playerList].reverse().map((player, index) => (
+                            <div key={index} style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                padding: '1rem',
+                                backgroundColor: 'var(--background)',
+                                borderRadius: '0.75rem',
+                                border: '1px solid var(--border)',
+                                animation: 'slideIn 0.3s ease-out',
+                                minWidth: '80px'
+                            }}>
+                                <div style={{
+                                    width: '2.5rem',
+                                    height: '2.5rem',
+                                    backgroundColor: `hsl(${index * 60}, 70%, 60%)`,
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: '1.25rem',
+                                    marginBottom: '0.5rem'
+                                }}>
+                                    {player.playerName}
+                                </div>
+                                <div style={{
+                                    textAlign: 'center'
+                                }}>
+                                    <h3 style={{
+                                        color: 'var(--secondary-text)',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '500',
+                                        wordBreak: 'break-word'
+                                    }}>
+                                        {player.username}
+                                    </h3>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {playerList.length > 0 && (
+                        <div style={{
+                            marginTop: '2rem',
+                            textAlign: 'center',
+                            color: 'var(--text)',
+                            fontSize: '0.875rem'
+                        }}>
+                            {playerList.length} oyuncu bekleme odasında
+                        </div>
+                    )}
+
+                    <style>{`
+                        @keyframes slideIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(10px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                    `}</style>
+                </div>
+            </main>
+        );
+    }
 
     // 2. Quiz yükleniyorsa loading göster
     if (loading) {
