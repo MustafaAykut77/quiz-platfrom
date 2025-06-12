@@ -1,5 +1,37 @@
 import GameModel from "../models/game.js";
 
+export const getGame = async (code) => {
+    try {
+        const game = await GameModel.findOne(
+            { code },
+            {
+                code: 1,
+                creatorid: 1,
+                quizid: 1,
+                players: 1,
+                _id: 0
+            }
+        );
+        if (!game) {
+            return {
+                success: false,
+                error: "Game not found"
+            };
+        }
+        return {
+            success: true,
+            data: game
+        };
+    }
+    catch (error) {
+        console.error("Error fetching game by code:", error);
+        return {
+            success: false,
+            error: "Error fetching game"
+        };
+    }
+};
+
 export const getPlayers = async (code) => {
     try {
         const existingGame = await GameModel.findOne({ code });
