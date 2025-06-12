@@ -1,5 +1,32 @@
 import GameModel from "../models/game.js";
-import { generateRandomId } from "../utils/IdGenerator.js";
+
+export const getPlayers = async (code) => {
+    try {
+        const existingGame = await GameModel.findOne({ code });
+        if (!existingGame) {
+            return {
+                success: false,
+                error: "Game not found"
+            };
+        }
+
+        const players = existingGame.players.map(player => ({
+            playerName: player.playerName,
+            playerScore: player.playerScore
+        }));
+
+        return {
+            success: true,
+            data: players
+        };
+    }
+    catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+};
 
 export const addPlayer = async (code, name) => {
     try {
