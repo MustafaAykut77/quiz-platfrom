@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import '../index.css';
 import "../config/firebase-config";
 
@@ -50,6 +50,7 @@ const App = () => {
                 </CheckAuth>
               </CheckAuthFirebase>
             } />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Layout>
       </BrowserRouter>
