@@ -19,6 +19,8 @@ const Quiz = () => {
     const [isGameStarted, setIsGameStarted] = useState(false);
 
     const [playerList, setPlayerList] = useState([]);
+    const [quiz, setQuiz] = useState(null);
+
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [showResult, setShowResult] = useState(false);
@@ -98,36 +100,15 @@ const Quiz = () => {
     useEffect(() => {
         if (!isGameStarted) return;
 
-        // Oyun socketleri
+        socket.on('question', (data) => {
+            console.log('Yeni soru alındı:', data);
+            setQuiz(data); // UI elementi yap
+        });
 
+        return () => {
+            socket.off('question');
+        }
     }, [isGameStarted]);
-
-    // // Quiz verilerini çekme
-    // useEffect(() => {
-    //     const fetchQuizData = async () => {
-    //         try {
-    //             setLoading(true);
-    //             const response = await getQuiz(quizId); // QuizCode yerine quizId kullan
-                
-    //             if (response && response.success) {
-    //                 setQuizData(response.data);
-    //                 console.log('Quiz verileri:', response.data);
-    //             } else {
-    //                 setError('Quiz verileri alınamadı');
-    //                 console.error('Quiz fetch hatası:', response);
-    //             }
-    //         } catch (err) {
-    //             setError('Quiz yüklenirken hata oluştu');
-    //             console.error('Quiz fetch hatası:', err);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     if (quizId) { // quizId varsa fetch işlemini başlat
-    //         fetchQuizData();
-    //     }
-    // }, [quizId]); // dependency array'e quizId ekle
 
     // Quiz soruları - API'den gelen verileri uygun formata çevirme
     const questions = quizData?.questions?.map(q => ({
