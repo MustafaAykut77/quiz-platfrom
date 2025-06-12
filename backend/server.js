@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
 import app from "./routes/app.js";
+import cors from "cors"
 import { setupSocketHandlers } from "./socket/socketHandlers.js";
 
 dotenv.config();
@@ -15,6 +16,7 @@ mongoose.connect(MONGOURL).then(() => {
 }).catch((error) => console.log(error));
 
 // Express.JS serverinin açılması
+app.use(cors());s
 const server = app.listen(PORT, () => {
   	console.log(`Server listening on port ${PORT}`);
 });
@@ -23,6 +25,7 @@ const server = app.listen(PORT, () => {
 const io = new Server(server, {
 	cors: {
 		origin: process.env.CLIENT_URL || "http://localhost:5173",
+		methods: ["GET", "POST"]
 	}
 });
 
@@ -36,8 +39,8 @@ process.on('SIGINT', () => {
 	server.close(() => {
 		console.log('Server closed.');
 		mongoose.connection.close(false, () => {
-		console.log('MongoDB connection closed.');
-		process.exit(0);
+			console.log('MongoDB connection closed.');
+			process.exit(0);
 		});
 	});
 });
