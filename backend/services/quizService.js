@@ -9,10 +9,7 @@ export const getQuestions = async (code) => {
                 error: "Quiz not found"
             };
         }
-        return {
-            success: true,
-            data: existingQuiz.questions
-        };
+        return existingQuiz.questions;
     }
     catch (error) {
         return {

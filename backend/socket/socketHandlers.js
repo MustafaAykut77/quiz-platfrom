@@ -41,7 +41,7 @@ export const setupConnectionSocket = (io) => {
     });
 };
 
-export const startGameSocket = (io, code) => {
+export const startGameSocket = async (io, code) => {
     io.to(code).allSockets().then(sockets => {
         sockets.forEach(socketId => {
             const socket = io.sockets.sockets.get(socketId);
@@ -52,15 +52,17 @@ export const startGameSocket = (io, code) => {
     });
     io.to(code).emit('start_game');
 
-    const game = getGame(code);
-    const questions = getQuestions(game.quizid);
+    
+    const game = await getGame(code);
+    const questions = await getQuestions(game.quizid);
     let questionCount = 0;
-
-    for (const question of questions) {
+    
+    questions.forEach(async (question) => {
+        
         questionCount++;
-
+        
         const time = Date.now() + 30000;
-
+        
         const data = {
             question: question.question,
             img: question.img || null,
@@ -72,14 +74,15 @@ export const startGameSocket = (io, code) => {
             totalQuestions: questions.length,
             time: time
         };
-
+        
         let correctAnswer = null;
         question.answers.forEach(answer => {
             if (answer.isCorrect) {
                 correctAnswer = answer.answer;
             }
         });
-
+        
+        
         io.to(code).emit('question', data);
 
         io.to(code).allSockets().then(sockets => {
@@ -106,6 +109,9 @@ export const startGameSocket = (io, code) => {
                 }
             });
         });
-    }
 
+        while (Date.now() < time) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    });
 };
