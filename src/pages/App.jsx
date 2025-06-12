@@ -23,7 +23,7 @@ const App = () => {
             <Route path="/" element={<QuizCode />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />  
-            <Route path="/game/:quizId" element={<Quiz />} />
+            <Route path="/game/:code" element={<Quiz />} />
             <Route path="/createprofile" element={
               <CheckAuthFirebase>
                 <CreateProfile />

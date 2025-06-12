@@ -33,7 +33,4 @@ const getGame = async (gameid) => {
   }
 };
 
-
-
-
 export { createGame, getGame };

@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import { useParams } from 'react-router-dom';
-import { getQuiz } from '@/src/controllers/QuizRequest';
+import { getGame } from '@/src/controllers/GameRequest';
+import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 
 const socket = io(import.meta.env.VITE_SERVER_URL, {
@@ -8,8 +9,14 @@ const socket = io(import.meta.env.VITE_SERVER_URL, {
 });
 
 const Quiz = () => {
-    const { quizId } = useParams();
+    const { code } = useParams();
+    const navigate = useNavigate();
     const backgroundMusic = useRef(new Audio('/background-music.mp3'));
+
+    const [isGameExists, setIsGameExists] = useState(false);
+    const [username, setUsername] = useState('');
+    const [isGameWaiting, setIsGameWaiting] = useState(false);
+    const [isGameStarted, setIsGameStarted] = useState(false);
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
@@ -22,32 +29,112 @@ const Quiz = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Quiz verilerini çekme
+    // API isteği ile code kontrolü
     useEffect(() => {
-        const fetchQuizData = async () => {
+        const checkGame = async () => {
             try {
-                setLoading(true);
-                const response = await getQuiz(quizId); // QuizCode yerine quizId kullan
-                
-                if (response && response.success) {
-                    setQuizData(response.data);
-                    console.log('Quiz verileri:', response.data);
-                } else {
-                    setError('Quiz verileri alınamadı');
-                    console.error('Quiz fetch hatası:', response);
+                const response = await getGame(code);
+                if (response.success == false) {
+                    navigate('/');
                 }
             } catch (err) {
-                setError('Quiz yüklenirken hata oluştu');
-                console.error('Quiz fetch hatası:', err);
-            } finally {
-                setLoading(false);
+                navigate('/');
             }
         };
+        checkGame();
+        setIsGameExists(true);
+    }, []);
 
-        if (quizId) { // quizId varsa fetch işlemini başlat
-            fetchQuizData();
-        }
-    }, [quizId]); // dependency array'e quizId ekle
+    // Socket bağlantısı ve setUsername işlemi
+    useEffect(() => {
+        socket.connect();
+        socket.on('connect', () => {
+            console.log('Socket bağlantısı başarılı:', socket.id);
+            socket.emit('join_game', code);
+        });
+
+        socket.on('user_joined', () => {
+            console.log('Kullanıcı katıldı.');
+            // Name elde etme ui elementini entegre et
+            setUsername("Sliman");
+            socket.off('user_joined');
+        });
+
+        return () => {
+            socket.off('connect');
+            socket.off('user_joined');
+            socket.disconnect();
+        };
+    }, [isGameExists]);
+
+    // Socket üzerinden kullanıcı adını belirleme
+    useEffect(() => {
+        if (!username) return;
+        socket.emit('set_username', username);
+
+        socket.on('username_set', (name) => {
+            console.log('Kullanıcı adı ayarlandı:', name);
+            // Bekleme ekranı gelecek burada bi süre bekleyebilir.
+            setGameStarted(true);
+            socket.off('username_set');
+        });
+
+        return () => {
+            socket.off('username_set');
+        };
+    }, [username]);
+
+    // Kullanıcı oyuna girdiğinde socket üzerinden bildirim gönderme
+    useEffect(() => {
+        if (!gameStarted) return;
+
+        socket.on('user_entered', (username) => {
+            console.log(`${username} oyuna girdi.`);
+            // Burada kullanıcı arayüzüne bildirim ekleyebilirsiniz
+        });
+
+        socket.on('start_game', () => {
+            console.log('Oyun başlatılıyor...');
+            // Oyun başladığında gerekli işlemleri yapabilirsiniz
+            setIsGameStarted(true);
+        });
+
+    }, [isGameWaiting]);
+
+    // Oyun başladığında gerekli işlemleri yapma
+    useEffect(() => {
+        if (!isGameStarted) return;
+
+        // Oyun socketleri
+
+    }, [isGameStarted]);
+
+    // // Quiz verilerini çekme
+    // useEffect(() => {
+    //     const fetchQuizData = async () => {
+    //         try {
+    //             setLoading(true);
+    //             const response = await getQuiz(quizId); // QuizCode yerine quizId kullan
+                
+    //             if (response && response.success) {
+    //                 setQuizData(response.data);
+    //                 console.log('Quiz verileri:', response.data);
+    //             } else {
+    //                 setError('Quiz verileri alınamadı');
+    //                 console.error('Quiz fetch hatası:', response);
+    //             }
+    //         } catch (err) {
+    //             setError('Quiz yüklenirken hata oluştu');
+    //             console.error('Quiz fetch hatası:', err);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
+
+    //     if (quizId) { // quizId varsa fetch işlemini başlat
+    //         fetchQuizData();
+    //     }
+    // }, [quizId]); // dependency array'e quizId ekle
 
     // Quiz soruları - API'den gelen verileri uygun formata çevirme
     const questions = quizData?.questions?.map(q => ({
@@ -142,7 +229,7 @@ const Quiz = () => {
     useEffect(() => {
         // Arkaplan müziğinin sesini ayarla (0.0 ile 1.0 arası)
         backgroundMusic.current.volume = 0.3;
-    }, []);
+    }, [isGameExists]);
 
     // Ses kontrolü için bir toggle fonksiyonu
     const toggleMusic = () => {
