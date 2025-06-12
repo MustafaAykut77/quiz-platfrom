@@ -1,4 +1,4 @@
-import { getPlayers, addPlayer, updatePlayer, getGameId } from "../services/gameService.js";
+import { getPlayers, addPlayer, updatePlayer, getGame } from "../services/gameService.js";
 import { getQuestions } from "../services/quizService.js";
 
 export const setupConnectionSocket = (io) => {
@@ -12,7 +12,7 @@ export const setupConnectionSocket = (io) => {
                 io.to(socket.id).emit('join_return', { error: result.error });
                 return;
             }
-
+            
             socket.join(code);
             socket.room = code;
             socket.username = username;
@@ -52,7 +52,7 @@ export const startGameSocket = (io, code) => {
     });
     io.to(code).emit('start_game');
 
-    const game = getGameId(code);
+    const game = getGame(code);
     const questions = getQuestions(game.quizid);
     let questionCount = 0;
 
