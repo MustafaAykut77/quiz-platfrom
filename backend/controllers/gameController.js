@@ -115,7 +115,7 @@ export const startGame = async (req, res) => {
             return res.status(403).json({ success: false, error: "Unauthorized" });
         }
 
-        startGameSocket(req.app.get('io'), code);
+        startGameSocket(req.app.get('io'), game.code);
 
         res.json({ success: true });
     } catch (error) {

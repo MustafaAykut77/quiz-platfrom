@@ -114,7 +114,7 @@ export const updatePlayer = async (code, name, score) => {
         
         existingGame.players.forEach(player => {
             if (player.playerName === name) {
-                player.playerScore = score;
+                player.playerScore += score;
             }
         });
 
