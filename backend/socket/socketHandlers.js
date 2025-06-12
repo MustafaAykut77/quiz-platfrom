@@ -34,10 +34,6 @@ export const setupConnectionSocket = (io) => {
                 playerScore: 0
             });
         });
-
-        
-
-        
     });
 };
 
@@ -46,7 +42,7 @@ export const startGameSocket = async (io, code) => {
         sockets.forEach(socketId => {
             const socket = io.sockets.sockets.get(socketId);
             if (socket) {
-                socket.off('join_game');
+                socket.removeAllListeners('join_game');
             }
         });
     });
@@ -58,7 +54,6 @@ export const startGameSocket = async (io, code) => {
     let questionCount = 0;
     
     questions.forEach(async (question) => {
-        
         questionCount++;
         
         const time = Date.now() + 30000;
@@ -82,7 +77,6 @@ export const startGameSocket = async (io, code) => {
             }
         });
         
-        
         io.to(code).emit('question', data);
 
         io.to(code).allSockets().then(sockets => {
@@ -94,7 +88,7 @@ export const startGameSocket = async (io, code) => {
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }
             
-                        if (correctAnswer === answer) {
+                        if (answer === correctAnswer) {
                             await updatePlayer(code, playerName, 50);
                             const players = await getPlayers(code);
                             socket.emit('answer_return', { success: true, players });
