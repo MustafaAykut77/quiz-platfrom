@@ -28,6 +28,7 @@ const Quiz = () => {
     const [quizData, setQuizData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [usernameInput, setUsernameInput] = useState(''); // yeni state
 
     // API isteği ile code kontrolü
     useEffect(() => {
@@ -57,8 +58,7 @@ const Quiz = () => {
 
         socket.on('user_joined', () => {
             console.log('Kullanıcı katıldı.');
-            // Name elde etme ui elementini entegre et
-            setUsername("Sliman");
+            // Artık burada otomatik setUsername yok!
             socket.off('user_joined');
         });
 
@@ -243,7 +243,80 @@ const Quiz = () => {
         setIsMuted(!isMuted);
     };
 
-    // Loading durumu
+    // 1. Önce kullanıcı adı ekranı
+    if (!username) {
+        return (
+            <main style={{
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'var(--background)',
+                fontFamily: 'cursive'
+            }}>
+                <div style={{
+                    background: 'var(--secondary-bg)',
+                    padding: '2rem',
+                    borderRadius: '1rem',
+                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                    border: '2px solid var(--border)',
+                    minWidth: '320px'
+                }}>
+                    <h2 style={{
+                        color: 'var(--secondary-text)',
+                        fontSize: '1.25rem',
+                        marginBottom: '1rem',
+                        textAlign: 'center'
+                    }}>
+                        Kullanıcı Adı Giriniz
+                    </h2>
+                    <form
+                        onSubmit={e => {
+                            e.preventDefault();
+                            if (usernameInput.trim()) setUsername(usernameInput.trim());
+                        }}
+                        style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+                    >
+                        <input
+                            type="text"
+                            value={usernameInput}
+                            onChange={e => setUsernameInput(e.target.value)}
+                            placeholder="Kullanıcı adınız"
+                            style={{
+                                padding: '0.75rem 1rem',
+                                borderRadius: '0.5rem',
+                                border: '1px solid var(--border)',
+                                fontSize: '1rem',
+                                outline: 'none'
+                            }}
+                            maxLength={20}
+                            autoFocus
+                        />
+                        <button
+                            type="submit"
+                            style={{
+                                padding: '0.75rem 1rem',
+                                backgroundColor: 'var(--text)',
+                                color: 'var(--secondary-bg)',
+                                border: 'none',
+                                borderRadius: '0.5rem',
+                                fontWeight: 'bold',
+                                fontSize: '1rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                            disabled={!usernameInput.trim()}
+                        >
+                            Katıl
+                        </button>
+                    </form>
+                </div>
+            </main>
+        );
+    }
+
+    // 2. Quiz yükleniyorsa loading göster
     if (loading) {
         return (
             <main style={{
@@ -274,7 +347,7 @@ const Quiz = () => {
         );
     }
 
-    // Error durumu
+    // 3. Quiz verisi yoksa veya hata varsa hata göster
     if (error || !quizData) {
         return (
             <main style={{
