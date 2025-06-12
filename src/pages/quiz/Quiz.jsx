@@ -306,54 +306,67 @@ const Quiz = () => {
             </main>
         );
     }
-    else {
+
+    if (isGameWaiting) {
         return (
             <main style={{
-                minWidth: '1200px', // 900px'den 1200px'e çıkarıldı
-                width: '90%', // Ekran genişliğinin %90'ını kapsayacak
-                maxWidth: '1600px', // Maksimum genişlik sınırı
+                width: '100%',
                 height: 'calc(100vh - 3.5rem)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'var(--background)',
                 fontFamily: 'cursive',
-                padding: '2rem',
-                margin: '0 auto' // Ortalamak için
+                padding: '2rem'
             }}>
                 <div style={{
                     width: '100%',
-                    maxWidth: '32rem',
+                    maxWidth: '48rem',
                     padding: '2rem',
                     backgroundColor: 'var(--secondary-bg)',
                     borderRadius: '1rem',
                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                    border: '2px solid var(--border)'
+                    border: '2px solid var(--border)',
+                    animation: 'fadeIn 0.5s ease-out'
                 }}>
-                    <h2 style={{
-                        color: 'var(--secondary-text)',
-                        fontSize: '1.5rem',
-                        marginBottom: '0.5rem',
-                        textAlign: 'center'
-                    }}>
-                        Oyuncular Bekleniyor...
-                    </h2>
-                    <p style={{
-                        color: 'var(--text)',
-                        fontSize: '0.875rem',
-                        marginBottom: '2rem',
-                        textAlign: 'center'
-                    }}>
-                        Oyun Kodu: <strong>{code}</strong>
-                    </p>
-                    
+                    {/* Header Bölümü */}
+                    <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                        <h2 style={{
+                            fontSize: '1.75rem',
+                            fontWeight: 'bold',
+                            color: 'var(--secondary-text)',
+                            marginBottom: '0.75rem'
+                        }}>
+                            Oyuncular Bekleniyor...
+                        </h2>
+                        <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            padding: '0.5rem 1rem',
+                            backgroundColor: 'var(--background)',
+                            borderRadius: '0.75rem',
+                            border: '1px solid var(--border)'
+                        }}>
+                            <span style={{
+                                color: 'var(--text)',
+                                fontSize: '1rem'
+                            }}>
+                                Oyun Kodu: <strong>{code}</strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Oyuncu Listesi */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(4, 1fr)',
+                        gridTemplateColumns: 'repeat(4, 1fr)', // 4 sütun olacak şekilde değiştirildi
                         gap: '1rem',
                         maxHeight: '400px',
                         overflowY: 'auto',
-                        padding: '0.5rem'
+                        padding: '1rem',
+                        backgroundColor: 'var(--background)',
+                        borderRadius: '0.75rem',
+                        border: '1px solid var(--border)'
                     }}>
                         {[...playerList].reverse().map((player, index) => (
                             <div key={index} style={{
@@ -361,49 +374,68 @@ const Quiz = () => {
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 padding: '1rem',
-                                backgroundColor: 'var(--background)',
+                                backgroundColor: 'var(--secondary-bg)',
                                 borderRadius: '0.75rem',
                                 border: '1px solid var(--border)',
                                 animation: 'slideIn 0.3s ease-out',
-                                minWidth: '80px'
+                                transition: 'transform 0.2s, box-shadow 0.2s',
+                                cursor: 'default'
+                            }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
                             }}>
                                 <div style={{
-                                    width: '2.5rem',
-                                    height: '2.5rem',
-                                    backgroundColor: `hsl(${index * 60}, 70%, 60%)`,
+                                    width: '3rem',
+                                    height: '3rem',
+                                    backgroundColor: `hsl(${index * 137.5}, 70%, 65%)`,
                                     borderRadius: '50%',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     color: 'white',
                                     fontWeight: 'bold',
-                                    fontSize: '1.25rem',
-                                    marginBottom: '0.5rem'
+                                    fontSize: '1.5rem',
+                                    marginBottom: '0.5rem',
+                                    border: '2px solid white',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                                 }}>
-                                    {player.playerName}
+                                    {player.playerName[0].toUpperCase()}
                                 </div>
                                 <div style={{
-                                    textAlign: 'center'
+                                    textAlign: 'center',
+                                    width: '100%'
                                 }}>
                                     <h3 style={{
                                         color: 'var(--secondary-text)',
                                         fontSize: '0.875rem',
-                                        fontWeight: '500',
+                                        fontWeight: '600',
+                                        marginBottom: '0.25rem',
                                         wordBreak: 'break-word'
                                     }}>
-                                        {player.username}
+                                        {player.playerName}
                                     </h3>
                                 </div>
                             </div>
                         ))}
                     </div>
-                    
+
+                    {/* Oyuncu Sayısı */}
                     {playerList.length > 0 && (
                         <div style={{
-                            marginTop: '2rem',
+                            marginTop: '1.5rem',
                             textAlign: 'center',
+                            padding: '0.75rem',
+                            backgroundColor: 'var(--background)',
+                            borderRadius: '0.75rem',
+                            border: '1px solid var(--border)',
                             color: 'var(--text)',
-                            fontSize: '0.875rem'
+                            fontSize: '0.875rem',
+                            fontWeight: '500'
                         }}>
                             {playerList.length} oyuncu bekleme odasında
                         </div>
@@ -418,6 +450,14 @@ const Quiz = () => {
                             to {
                                 opacity: 1;
                                 transform: translateY(0);
+                            }
+                        }
+                        @keyframes fadeIn {
+                            from {
+                                opacity: 0;
+                            }
+                            to {
+                                opacity: 1;
                             }
                         }
                     `}</style>
