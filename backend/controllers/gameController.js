@@ -1,11 +1,12 @@
 import GameModel from "../models/game.js";
 import QuizModel from "../models/quiz.js";
 import { generateRandomId } from "../utils/IdGenerator.js";
+import { startGameSocket } from "../socket/socketHandlers.js";
 
-export const getGame = async (req, res) => {
+export const getGameId = async (req, res) => {
     try {
         const { code } = req.params;
-
+        
         const game = await GameModel.findOne(
             { code },
             {
@@ -21,7 +22,7 @@ export const getGame = async (req, res) => {
                 message: "Game not found"
             });
         }
-
+        
         res.json({
             success: true,
             data: game
@@ -31,6 +32,37 @@ export const getGame = async (req, res) => {
         res.status(500).json({ 
             success: false,
             message: "Error fetching game"
+        });
+    }
+};
+
+export const getGame = async (req, res) => {
+    try {
+        const game = await GameModel.findOne(
+            { creatorid: req.user.uid },
+            {
+                code: 1,
+                creatorid: 1,
+                quizid: 1,
+                players: 1,
+                _id: 0
+            }
+        );
+        if (!game) {
+            return res.status(404).json({
+                success: false,
+                message: "Game not found"
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: game
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false,
+            message: "Error fetching game" 
         });
     }
 };
@@ -73,5 +105,20 @@ export const createGame = async (req, res) => {
             success: false,
             message: "Error creating Games" 
         });
+    }
+};
+
+export const startGame = async (req, res) => {
+    try {        
+        const game = await GameModel.findOne({ creatorid: req.user.uid });
+        if (!game) {
+            return res.status(403).json({ success: false, error: "Unauthorized" });
+        }
+
+        startGameSocket(req.app.get('io'), code);
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
     }
 };

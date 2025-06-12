@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import app from "./routes/app.js";
 import cors from "cors"
-import { setupSocketHandlers } from "./socket/socketHandlers.js";
+import { setupConnectionSocket } from "./socket/socketHandlers.js";
 
 dotenv.config();
 
@@ -30,7 +30,7 @@ const io = new Server(server, {
 });
 
 // Socekt'ların kurulması
-setupSocketHandlers(io);
+setupConnectionSocket(io);
 
 // Düzgün kapanış için olay dinleyicisi ekle
 process.on('SIGINT', () => {

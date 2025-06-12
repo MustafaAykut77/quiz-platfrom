@@ -1,7 +1,7 @@
-import { getPlayers, addPlayer, updatePlayer } from "../services/gameService.js";
-import { authToken } from "../middleware/authToken.js";
+import { getPlayers, addPlayer, updatePlayer, getGameId } from "../services/gameService.js";
+import { getQuestions } from "../services/quizService.js";
 
-export const setupSocketHandlers = (io) => {
+export const setupConnectionSocket = (io) => {
 	io.on("connection", (socket) => {
         console.log("A user connected:", socket.id);
 
@@ -33,10 +33,22 @@ export const setupSocketHandlers = (io) => {
                 playerName: username,
                 playerScore: 0
             });
-        });        
+        }); 
+    });
+};
+
+export const startGameSocket = (io, code) => {
+    socket.off('join_game');
+    io.to(code).emit('start_game');
+
+    const game = getGameId(code);
+    const questions = getQuestions(game.quizid);
+    let questionCount = 0;
+
+    io.to(code).emit('question', {
+        question: questions[questionCount],
+        questionCount: questionCount + 1,
+        totalQuestions: questions.length
     });
 
-    io.of("/admin").use(authToken).on("connection", (socket) => {
-        console.log("An admin connected:", socket.user);
-    });
 };
