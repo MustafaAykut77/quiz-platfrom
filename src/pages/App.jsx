@@ -4,7 +4,7 @@ import "../config/firebase-config";
 
 import Login from './login/Login';
 import Register from './register/Register';
-import QuizCode from './quiz/QuizCode';
+import GameCode from './quiz/GameCode';
 import Quiz from './quiz/Quiz';
 import Panel from './quiz/Panel';
 import Qwiz from './Qwiz';
@@ -21,7 +21,7 @@ const App = () => {
       <BrowserRouter>
         <Layout>
           <Routes>
-            <Route path="/" element={<QuizCode />} />
+            <Route path="/" element={<GameCode />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />  
             <Route path="/game/:code" element={<Quiz />} />
