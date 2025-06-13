@@ -1,4 +1,4 @@
-import { getPlayers, addPlayer, updatePlayer, getGame } from "../services/gameService.js";
+import { getPlayers, addPlayer, updatePlayer, getGame, deleteGame } from "../services/gameService.js";
 import { getQuestions } from "../services/quizService.js";
 
 export const setupConnectionSocket = (io) => {
