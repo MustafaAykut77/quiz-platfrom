@@ -20,7 +20,7 @@ const Quiz = () => {
 
     const [playerList, setPlayerList] = useState([]);
     const [quiz, setQuiz] = useState(null);
-
+    const [answerSent, setAnswerSent] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [isCorrect, setIsCorrect] = useState(false);
     const [showResult, setShowResult] = useState(false);
@@ -104,7 +104,9 @@ const Quiz = () => {
             console.log('Yeni soru alındı:', data);
             setQuiz(data);
             setShowFeedback(false)
+            setIsCorrect(false)
             setIsGameWaiting(false)
+            setSelectedAnswer(null);
         });
 
         socket.on('answer_return', (data) => {
@@ -112,6 +114,7 @@ const Quiz = () => {
             setPlayerList(data.players.data)
             setIsCorrect(data.success)
             playSound(data.success)
+            setShowFeedback(true);
         })
         return () => {
             socket.off('question');
@@ -147,11 +150,6 @@ const Quiz = () => {
             // Her soru için kalan süreyi hesapla
             const remaining = Math.floor((quiz.time - Date.now()) / 1000);
             setTimer(remaining)
-
-            // Eğer süre bitmişse hemen sonraki soruya geç
-            if (remaining <= 0) {
-                handleNextQuestion();
-            }
         }
         // eslint-disable-next-line
     }, [quiz]);
@@ -167,7 +165,6 @@ const Quiz = () => {
 
                 if (remaining <= 0) {
                     clearInterval(interval);
-                    handleNextQuestion();
                 }
             }
         }, 1000);
@@ -185,14 +182,22 @@ const Quiz = () => {
     };
 
     const handleAnswerClick = (selectedIndex) => {
-        setSelectedAnswer(selectedIndex); 
-        socket.emit('answer', username, selectedIndex);
+        if (!answerSent) setSelectedAnswer(selectedIndex);
     };
 
-    const handleNextQuestion = () => {
-        setSelectedAnswer(null);
-        setShowFeedback(true);
+    // Onayla butonuna basınca cevabı gönder
+    const handleConfirmAnswer = () => {
+        if (selectedAnswer !== null && !answerSent) {
+            socket.emit('answer', username, selectedAnswer);
+            setAnswerSent(true);
+        }
     };
+
+    // Yeni soru geldiğinde sıfırla
+    useEffect(() => {
+        setSelectedAnswer(null);
+        setAnswerSent(false);
+    }, [quiz]);
 
     const restartQuiz = () => {
         setCurrentQuestionIndex(0);
@@ -552,7 +557,7 @@ const Quiz = () => {
         return(
             <main style={{
                 width: '100%',
-                height: 'calc(100vh - 3.5rem)',
+                height: 'calc(100vh + 11rem)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -571,7 +576,7 @@ const Quiz = () => {
                     animation: 'slideUp 0.5s ease-out'
                 }}>
                     {/* Header */}
-                    <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    <div style={{ textAlign: 'center', marginTop: '1rem', marginBottom: '1rem'}}>
                         <h2 style={{
                             fontSize: '2rem',
                             fontWeight: 'bold',
@@ -586,6 +591,28 @@ const Quiz = () => {
                         }}>
                             Soru {quiz?.questionCount} / {quiz?.totalQuestions} tamamlandı
                         </p>
+
+                        {quiz?.questionCount < quiz?.totalQuestions ? (
+                            <div style={{
+                                color: 'var(--text)',
+                                fontSize: '0.875rem',
+                                fontStyle: 'italic'
+                            }}>
+                                Sonraki soru otomatik olarak gelecek...
+                            </div>
+                        ) : (
+                            <div style={{
+                                padding: '1rem',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderRadius: '0.75rem',
+                                border: '1px solid #10b981',
+                                color: '#10b981',
+                                fontWeight: '600'
+                            }}>
+                                🎉 Quiz tamamlandı!
+                            </div>
+                        )}
+
                     </div>
 
                     {/* Oyuncu Listesi - Puana Göre Sıralı */}
@@ -732,6 +759,37 @@ const Quiz = () => {
                             })}
                     </div>
 
+                    {showFeedback && (
+                        <div style={{
+                            marginTop: '1.5rem',
+                            padding: '1rem',
+                            borderRadius: '0.5rem',
+                            border: '2px solid',
+                            borderColor: isCorrect ? '#10b981' : '#ef4444',
+                            backgroundColor: isCorrect ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                            marginBottom: '1rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem'
+                        }}>
+                            {isCorrect ? (
+                                <>
+                                    <svg style={{ width: '1.25rem', height: '1.25rem', color: '#10b981' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span style={{ color: '#10b981', fontWeight: '500' }}>Doğru bildin! 🎉</span>
+                                </>
+                            ) : (
+                                <>
+                                    <svg style={{ width: '1.25rem', height: '1.25rem', color: '#ef4444' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    <span style={{ color: '#ef4444', fontWeight: '500' }}>Yanlış bildin!</span>
+                                </>
+                            )}
+                        </div>
+                    )}
+
                     {/* Progress Bar */}
                     <div style={{
                         marginTop: '1.5rem',
@@ -784,26 +842,6 @@ const Quiz = () => {
                         marginTop: '1.5rem',
                         textAlign: 'center'
                     }}>
-                        {quiz?.questionCount < quiz?.totalQuestions ? (
-                            <div style={{
-                                color: 'var(--text)',
-                                fontSize: '0.875rem',
-                                fontStyle: 'italic'
-                            }}>
-                                Sonraki soru otomatik olarak gelecek...
-                            </div>
-                        ) : (
-                            <div style={{
-                                padding: '1rem',
-                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                borderRadius: '0.75rem',
-                                border: '1px solid #10b981',
-                                color: '#10b981',
-                                fontWeight: '600'
-                            }}>
-                                🎉 Quiz tamamlandı! Sonuçlar hesaplanıyor...
-                            </div>
-                        )}
                     </div>
 
                     {/* CSS Animasyonları */}
@@ -948,11 +986,11 @@ const Quiz = () => {
                                 circleStyle.borderColor = 'var(--border)';
                                 circleStyle.color = 'var(--text)';
                             } else if (selectedAnswer === index) {
-                                buttonStyle.borderColor = '#ef4444';
-                                buttonStyle.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                                buttonStyle.color = '#ef4444';
-                                circleStyle.borderColor = '#ef4444';
-                                circleStyle.backgroundColor = '#ef4444';
+                                buttonStyle.borderColor = '#3b82f6'; // Mavi vurgulu kenarlık
+                                buttonStyle.backgroundColor = 'rgba(59, 130, 246, 0.08)'; // Hafif mavi arka plan
+                                buttonStyle.color = '#3b82f6';
+                                circleStyle.borderColor = '#3b82f6';
+                                circleStyle.backgroundColor = '#3b82f6';
                                 circleStyle.color = 'white';
                             } else {
                                 buttonStyle.borderColor = 'var(--border)';
@@ -965,8 +1003,7 @@ const Quiz = () => {
                             return (
                                 <button
                                     key={index}
-                                    onClick={() => handleAnswerClick(index)}
-                                    disabled={selectedAnswer !== null}
+                                    onClick={() => handleAnswerClick(index)}    
                                     style={buttonStyle}
                                     onMouseOver={(e) => {
                                         if (selectedAnswer === null) {
@@ -1007,6 +1044,26 @@ const Quiz = () => {
                                 </button>
                             );
                         })}
+
+                        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                            <button
+                                onClick={handleConfirmAnswer}
+                                disabled={selectedAnswer === null || answerSent}
+                                style={{
+                                    padding: '0.75rem 2rem',
+                                    fontSize: '1rem',
+                                    fontWeight: 'bold',
+                                    borderRadius: '0.5rem',
+                                    backgroundColor: selectedAnswer !== null && !answerSent ? '#3b82f6' : '#d1d5db',
+                                    color: selectedAnswer !== null && !answerSent ? 'white' : '#6b7280',
+                                    border: 'none',
+                                    cursor: selectedAnswer !== null && !answerSent ? 'pointer' : 'not-allowed',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                Onayla
+                            </button>
+                        </div>
                     </div>            
 
                     {/* Feedback */}
