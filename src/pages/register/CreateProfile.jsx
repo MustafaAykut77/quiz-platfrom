@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react"
-import { Navigate, Link, useNavigate } from "react-router-dom"
+import { useState } from "react"
+import { Navigate, useNavigate } from "react-router-dom"
 import { useAuth } from "@/src/contexts/authContext/page";
-import { createUser, getUser } from "@/src/controllers/UserRequest"
+import { createUser } from "@/src/controllers/UserRequest"
 
 const ProfileSetup = () => {
 
@@ -19,49 +19,49 @@ const ProfileSetup = () => {
     const predefinedPhotos = [
         {
             id: 1,
-            url: "https://i.pinimg.com/736x/8a/14/35/8a143598790e89bd1216827ad27d6b56.jpg",
+            src: "/profileImages/1.jpg",
             alt: "Hatsune Miku"
         },
         {
             id: 2,
-            url: "https://i.pinimg.com/736x/a6/67/73/a667732975f0f1da1a0fd4625e30d776.jpg",
+            src: "/profileImages/2.jpg",
             alt: "Gojo Satoru"
         },
         {
             id: 3,
-            url: "https://i.pinimg.com/736x/e6/a9/8a/e6a98a257565d829009a1c1735ee1589.jpg",
+            src: "/profileImages/3.jpg",
             alt: "Kedy"
         },
         {
             id: 4,
-            url: "https://i.pinimg.com/736x/77/13/51/7713515be201cd4e02ea9ea8edb8c001.jpg",
+            src: "/profileImages/4.jpg",
             alt: "Dog"
         },
         {
             id: 5,
-            url: "https://i.pinimg.com/736x/87/a8/a9/87a8a9ca45217ef2487c38f966e68641.jpg",
+            src: "/profileImages/5.jpg",
             alt: "Sunshine"
         },
         {
             id: 6,
-            url: "https://i.pinimg.com/736x/76/5a/c9/765ac945985b26b63b3318a0acf76a11.jpg",
+            src: "/profileImages/6.jpg",
             alt: "Frieren"
         },
         {
             id: 7,
-            url: "https://i.pinimg.com/736x/93/d7/c9/93d7c9042c9654c48444877077db935b.jpg",
+            src: "/profileImages/7.jpg",
             alt: "Basic Pink"
         },
         {
             id: 8,
-            url: "https://i.pinimg.com/736x/68/3d/8f/683d8f58c98a715130b1251a9d59d1b9.jpg",
+            src: "/profileImages/8.jpg",
             alt: "Basic Blue"
         }
     ]
 
     const handlePredefinedPhotoSelect = (photo) => {
         setSelectedPredefinedPhoto(photo.id)
-        setImagePreview(photo.url)
+        setImagePreview(photo.src)
         setErrorMessage('')
     }
 
@@ -90,10 +90,10 @@ const ProfileSetup = () => {
                     throw new Error('Kullanıcı oturumu bulunamadı')
                 }
 
-                // Profil fotoğrafı URL'sini belirle
+                // Profil fotoğrafı src'sini belirle
                 let profilePhoto = selectedPredefinedPhoto || 0
 
-                // createUser fonksiyonuna profil fotoğrafı URL'sini de gönder
+                // createUser fonksiyonuna profil fotoğrafı src'sini de gönder
                 await createUser(token, username, profilePhoto)
                 
                 navigate('/home')
@@ -149,14 +149,14 @@ const ProfileSetup = () => {
                                         type="button"
                                         onClick={() => handlePredefinedPhotoSelect(photo)}
                                         className={`w-26 rounded-full border-2 overflow-hidden transition-all duration-200 ${
-                                            selectedPredefinedPhoto === photo.url
+                                            selectedPredefinedPhoto === photo.src
                                                 ? 'border-indigo-600 ring-2 ring-indigo-300 shadow-lg' 
                                                 : 'border-gray-300 hover:border-indigo-400 hover:shadow-md'
                                         }`}
                                         disabled={isSubmitting}
                                     >
                                         <img 
-                                            src={photo.url} 
+                                            src={photo.src} 
                                             alt={photo.alt}
                                             className="w-16 h-16 object-cover rounded-full"
                                         />

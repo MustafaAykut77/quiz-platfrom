@@ -70,18 +70,16 @@ const Panel = () => {
     return (
         <main style={{
             width: '100%',
-            height: 'calc(100vh - 3.5rem)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'var(--background)',
             fontFamily: 'cursive',
-            padding: '2rem'
         }}>
             <div style={{
                 width: '100%',
                 maxWidth: '48rem',
-                padding: '2rem',
+                padding: '1.5rem',
                 backgroundColor: 'var(--secondary-bg)',
                 borderRadius: '1rem',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
@@ -89,7 +87,7 @@ const Panel = () => {
                 animation: 'fadeIn 0.5s ease-out'
             }}>
                 {/* Header Bölümü */}
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                     <h2 style={{
                         fontSize: '1.75rem',
                         fontWeight: 'bold',
@@ -163,7 +161,7 @@ const Panel = () => {
                                 border: '2px solid white',
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}>
-                                {player.playerName}
+                                {player.playerName[0]}
                             </div>
                             <div style={{
                                 textAlign: 'center',
@@ -183,29 +181,28 @@ const Panel = () => {
                     ))}
                 </div>
 
-                {/* Oyuncu Sayısı */}
-                {playerList.length > 0 && (
-                    <div style={{
-                        marginTop: '1.5rem',
-                        textAlign: 'center',
-                        padding: '0.75rem',
-                        backgroundColor: 'var(--background)',
-                        borderRadius: '0.75rem',
-                        border: '1px solid var(--border)',
-                        color: 'var(--text)',
-                        fontSize: '0.875rem',
-                        fontWeight: '500'
-                    }}>
-                        {playerList.length} oyuncu bekleme odasında
-                    </div>
-                )}
-
-                {/* Oyunu Başlat Butonu ve Hata Mesajı */}
                 <div style={{
                     display: 'flex',
-                    justifyContent: 'center',
-                    marginTop: '2rem'
+                    justifyContent: 'space-between',
+                    gap: '2rem',
+                    marginTop: '1rem'
                 }}>
+                    {playerList.length > 0 && (
+                        <div style={{
+                            padding: '0.75rem 1.5rem',
+                            backgroundColor: 'var(--background)',
+                            borderRadius: '0.75rem',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text)',
+                            fontSize: '0.95rem',
+                            fontWeight: '500',
+                            textAlign: 'center',
+                            minWidth: '160px'
+                        }}>
+                            {playerList.length} oyuncu bekleme odasında
+                        </div>
+                    )}
+
                     <button
                         onClick={handleStartGame}
                         disabled={loading || playerList.length < 2}
@@ -221,7 +218,8 @@ const Panel = () => {
                             transition: 'all 0.2s',
                             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                             position: 'relative',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            minWidth: '160px'
                         }}
                         onMouseOver={(e) => {
                             if (!loading && playerList.length >= 2) {
@@ -239,20 +237,6 @@ const Panel = () => {
                         {loading ? 'Başlatılıyor...' : 'Oyunu Başlat'}
                     </button>
                 </div>
-
-                {error && (
-                    <div style={{
-                        marginTop: '1rem',
-                        padding: '0.75rem',
-                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                        color: 'rgb(220, 38, 38)',
-                        borderRadius: '0.5rem',
-                        textAlign: 'center',
-                        fontSize: '0.875rem'
-                    }}>
-                        {error}
-                    </div>
-                )}
 
                 <style>{`
                     @keyframes slideIn {

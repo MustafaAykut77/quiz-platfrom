@@ -13,9 +13,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-// Import getAllQuizzes function
 import { getAllQuizzes, updateQuiz, deleteQuiz } from '../controllers/QuizRequest';
 import { createGame } from '../controllers/GameRequest';
 
@@ -294,10 +291,9 @@ const Qwiz = () => {
   return (
     <div style={{
       width: '100%',
-      minHeight: '100vh',
+      Height: '100vh',
       backgroundColor: 'var(--background)',
       fontFamily: 'cursive',
-      padding: '2rem'
     }}>
       <div style={{
         maxWidth: '80rem',

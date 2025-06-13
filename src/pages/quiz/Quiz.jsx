@@ -300,18 +300,16 @@ const Quiz = () => {
         return (
             <main style={{
                 width: '100%',
-                height: 'calc(100vh - 3.5rem)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'var(--background)',
                 fontFamily: 'cursive',
-                padding: '2rem'
             }}>
                 <div style={{
                     width: '100%',
                     maxWidth: '48rem',
-                    padding: '2rem',
+                    padding: '1.5rem',
                     backgroundColor: 'var(--secondary-bg)',
                     borderRadius: '1rem',
                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
@@ -319,7 +317,7 @@ const Quiz = () => {
                     animation: 'fadeIn 0.5s ease-out'
                 }}>
                     {/* Header Bölümü */}
-                    <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                         <h2 style={{
                             fontSize: '1.75rem',
                             fontWeight: 'bold',
@@ -348,7 +346,7 @@ const Quiz = () => {
                     {/* Oyuncu Listesi */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(4, 1fr)', // 4 sütun olacak şekilde değiştirildi
+                        gridTemplateColumns: 'repeat(4, 1fr)',
                         gap: '1rem',
                         maxHeight: '400px',
                         overflowY: 'auto',
@@ -393,7 +391,7 @@ const Quiz = () => {
                                     border: '2px solid white',
                                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                                 }}>
-                                    {player.playerName.toUpperCase()}
+                                    {player.playerName[0]}
                                 </div>
                                 <div style={{
                                     textAlign: 'center',
