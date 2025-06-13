@@ -84,19 +84,22 @@ export const startGameSocket = async (io, code) => {
                 const socket = io.sockets.sockets.get(socketId);
                 if (socket) {
                     socket.on('answer', async (playerName, answer) => {
+                        if (Date.now() < time) {
+                            if (answer === correctAnswer) {
+                                await updatePlayer(code, playerName, 50);
+                            }
+                        }
+                        else {
+                            socket.off('answer');
+                            return;
+                        }
+
                         while (Date.now() < time) {
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }
-            
-                        if (answer === correctAnswer) {
-                            await updatePlayer(code, playerName, 50);
-                            const players = await getPlayers(code);
-                            socket.emit('answer_return', { success: true, players });
-                        }
-                        else {
-                            const players = await getPlayers(code);
-                            socket.emit('answer_return', { success: false, players });
-                        }
+
+                        const players = await getPlayers(code);
+                        socket.emit('answer_return', { success: answer === correctAnswer, players });
 
                         socket.off('answer');
                     });
