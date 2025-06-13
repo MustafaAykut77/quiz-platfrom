@@ -163,7 +163,7 @@ const Panel = () => {
                                 border: '2px solid white',
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}>
-                                {player.playerName[0].toUpperCase()}
+                                {player.playerName}
                             </div>
                             <div style={{
                                 textAlign: 'center',
