@@ -90,7 +90,7 @@ export const startGameSocket = async (io, code) => {
                             }
                         }
                         else {
-                            socket.off('answer');
+                            // socket.off('answer');
                             return;
                         }
 
@@ -101,7 +101,7 @@ export const startGameSocket = async (io, code) => {
                         const players = await getPlayers(code);
                         socket.emit('answer_return', { success: answer === correctAnswer, players });
 
-                        socket.off('answer');
+                        // socket.off('answer');
                     });
                 }
             });
