@@ -32,6 +32,28 @@ export const getGame = async (code) => {
     }
 };
 
+export const deleteGame = async (code) => {
+    try {
+        const deletedGame = await GameModel.findOneAndDelete({ code });
+        if (!deletedGame) {
+            return {
+                success: false,
+                error: "Game not found"
+            };
+        }
+        return {
+            success: true,
+            data: deletedGame
+        };
+    } catch (error) {
+        console.error("Error deleting game:", error);
+        return {
+            success: false,
+            error: "Error deleting game"
+        };
+    }
+};
+
 export const getPlayers = async (code) => {
     try {
         const existingGame = await GameModel.findOne({ code });

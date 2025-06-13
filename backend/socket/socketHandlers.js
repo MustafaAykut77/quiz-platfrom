@@ -111,4 +111,6 @@ export const startGameSocket = async (io, code) => {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
+
+    deleteGame(code);
 };
