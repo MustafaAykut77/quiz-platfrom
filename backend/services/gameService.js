@@ -120,7 +120,7 @@ export const updatePlayer = async (code, name, score) => {
 
         const updatedGame = await GameModel.findOneAndUpdate(
             { code },
-            { players: existingGame.players },
+            { $set: { players: existingGame.players } },
             { new: true }
         );
 
