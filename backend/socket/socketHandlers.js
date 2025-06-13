@@ -47,16 +47,16 @@ export const startGameSocket = async (io, code) => {
         });
     });
     io.to(code).emit('start_game');
-
     
     const game = await getGame(code);
     const questions = await getQuestions(game.data.quizid);
     let questionCount = 0;
     
-    questions.forEach(async (question) => {
+    for (const question of questions) {
         questionCount++;
         
-        const time = Date.now() + 30000;
+        const endAnswer = Date.now() + 30000;
+        const endQuestion = Date.now() + 35000;
         
         const data = {
             question: question.question,
@@ -67,7 +67,7 @@ export const startGameSocket = async (io, code) => {
             })),
             questionCount: questionCount,
             totalQuestions: questions.length,
-            time: time
+            endAnswer
         };
         
         let correctAnswer = null;
@@ -84,7 +84,7 @@ export const startGameSocket = async (io, code) => {
                 const socket = io.sockets.sockets.get(socketId);
                 if (socket) {
                     socket.on('answer', async (playerName, answer) => {
-                        if (Date.now() < time) {
+                        if (Date.now() < endAnswer) {
                             if (answer === correctAnswer) {
                                 await updatePlayer(code, playerName, 50);
                             }
@@ -94,7 +94,7 @@ export const startGameSocket = async (io, code) => {
                             return;
                         }
 
-                        while (Date.now() < time) {
+                        while (Date.now() < endAnswer) {
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }
 
@@ -107,8 +107,8 @@ export const startGameSocket = async (io, code) => {
             });
         });
 
-        while (Date.now() < time) {
+        while (Date.now() < endQuestion) {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
-    });
+    }
 };
