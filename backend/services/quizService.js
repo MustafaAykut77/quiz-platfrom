@@ -1,8 +1,10 @@
 import QuizModel from "../models/quiz.js";
 
-export const getQuestions = async (code) => {
+export const getQuestions = async (quizid) => {
     try {
-        const existingQuiz = await QuizModel.findOne({ code });
+        console.log("Fetching questions for quiz code:", quizid);
+        const existingQuiz = await QuizModel.findOne({ quizid });
+        console.log("Existing Quiz:", existingQuiz);
         if (!existingQuiz) {
             return {
                 success: false,
