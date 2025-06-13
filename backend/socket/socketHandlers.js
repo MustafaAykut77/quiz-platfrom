@@ -71,11 +71,11 @@ export const startGameSocket = async (io, code) => {
         };
         
         let correctAnswer = null;
-        question.answers.forEach(answer => {
+        for (const [index, answer] of question.answers.entries()) {
             if (answer.isCorrect) {
-                correctAnswer = answer.answer;
+                correctAnswer = index;
             }
-        });
+        }
         
         io.to(code).emit('question', data);
 
