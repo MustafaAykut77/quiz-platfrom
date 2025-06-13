@@ -72,21 +72,6 @@ const Header = () => {
                                 <BiHome />Ana Sayfa
                                 
                             </Link>
-                            <Link 
-                                to="/"
-                                onClick={(e) => {
-                                    const confirmed = window.confirm("Çıkış yapmak istediğinize emin misiniz?");
-                                    if (!confirmed) {
-                                        e.preventDefault();
-                                        return;
-                                    }
-                                    doSignOut();
-                                }} 
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border-2 border-[var(--secondary-border)] rounded hover:scale-105 hover:shadow-md transition-all duration-200 cursor-pointer"
-                            >
-                                <BiLogOut /> Çıkış Yap
-                            </Link>
-
                         </>
                         :
                         <>
