@@ -67,7 +67,7 @@ export const startGameSocket = async (io, code) => {
             })),
             questionCount: questionCount,
             totalQuestions: questions.length,
-            endAnswer
+            time: endAnswer
         };
         
         let correctAnswer = null;
