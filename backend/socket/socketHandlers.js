@@ -50,7 +50,7 @@ export const startGameSocket = async (io, code) => {
 
     
     const game = await getGame(code);
-    const questions = await getQuestions(game.quizid);
+    const questions = await getQuestions(game.data.quizid);
     let questionCount = 0;
     
     questions.forEach(async (question) => {
