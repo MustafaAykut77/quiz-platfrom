@@ -875,13 +875,13 @@ const Quiz = () => {
         return (
             <main style={{
                 width: '100%',
-                height: 'calc(100vh - 3.5rem)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'var(--background)',
                 fontFamily: 'cursive',
-                position: 'relative'
+                position: 'relative',
+                marginTop: '1rem'
             }}>
                 <div style={{
                     width: '100%',
@@ -935,6 +935,28 @@ const Quiz = () => {
                             }}></div>
                         </div>
 
+                        {/* Soru Görseli */}
+                        {quiz?.img && (
+                            <div style={{
+                                marginTop: '1rem',
+                                textAlign: 'center'
+                            }}>
+                                <img 
+                                    src={quiz.img} 
+                                    alt="Soru Görseli" 
+                                    style={{
+                                        maxWidth: '100%',
+                                        maxHeight: '200px',
+                                        borderRadius: '0.5rem',
+                                        objectFit: 'contain',
+                                        border: '1px solid var(--border)'
+                                    }}
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
+                            </div>
+                        )}
                                         
                         {/* Soru Metni */}
                         <h2 style={{
@@ -942,7 +964,8 @@ const Quiz = () => {
                             fontWeight: 'bold',
                             color: 'var(--secondary-text)',
                             lineHeight: '1.6',
-                            marginBottom: '1.5rem'
+                            marginBottom: '1.5rem',
+                            minWidth: '320px'
                         }}>
                             {quiz?.question}
                         </h2>
@@ -1090,9 +1113,7 @@ const Quiz = () => {
                 <button 
                     onClick={toggleMusic}
                     style={{
-                        position: 'absolute',
-                        top: '1rem',
-                        right: '1rem',
+                        position: 'relative',
                         padding: '0.5rem',
                         borderRadius: '50%',
                         backgroundColor: 'var(--secondary-bg)',
